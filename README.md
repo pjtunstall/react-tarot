@@ -1,3 +1,10 @@
+# Fix
+
+- Jump to the right.
+- No hover effect on full screen.
+
+...................
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

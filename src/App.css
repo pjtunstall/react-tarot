@@ -6,11 +6,29 @@
 
 .image {
   border: 5px solid #5d0113;
-  transition: width 0.5s ease, height 0.5s ease, border 0.2s ease;
+  transition: width 0.5s ease, height 0.5s ease, border 0.2s ease,
+    transform 0.5s ease;
+}
+
+#name {
+  color: silver;
+  transition: color 0.2s ease;
 }
 
 .image:hover {
   border: 5px solid #f50334;
+}
+
+.large-image:hover {
+  width: 66vmin;
+}
+
+.small-image:hover {
+  width: 22vmin;
+}
+
+.very-small-image:hover {
+  width: 11vmin;
 }
 
 .large-image {
@@ -25,12 +43,23 @@
   margin: 0 10px;
 }
 
+.very-small-image {
+  width: 10vmin;
+  height: auto;
+  margin: 0 5px;
+}
+
+.very-very-small-image {
+  width: 5vmin;
+  height: auto;
+  margin: 0 2.5px;
+}
+
 .hidden-image {
-  width: 0;
+  display: none;
 }
 
 .App-header {
-  /* background-color: #391414; */
   background-color: rgb(26, 0, 0);
   min-height: 100vh;
   display: flex;
