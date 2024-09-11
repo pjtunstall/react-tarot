@@ -16,16 +16,18 @@ import fortune from "./images/10_fortune.jpg";
 import strength from "./images/11_strength.jpg";
 import hangedMan from "./images/12_hanged.jpg";
 import death from "./images/13_death.jpg";
+import temperance from "./14_temperance.jpg";
+import devil from "./images/15_devil.jpg";
 import tower from "./images/16_tower.jpg";
 import star from "./images/17_star.jpg";
 import moon from "./images/18_moon.jpg";
 import sun from "./images/19_sun.jpg";
 import judgement from "./images/20_judgement.jpg";
 import world from "./images/21_world.jpg";
-// import temperance from "./images/14_temperance.jpg";
 
-function Card({ src, x, names }) {
+function Card({ src, x, cardName }) {
   const [isHovered, setIsHovered] = useState(false);
+
   let size;
   switch (x) {
     case 1:
@@ -53,18 +55,18 @@ function Card({ src, x, names }) {
       size = "hidden-image";
   }
   return (
-    <div>
+    <div id={cardName} className={"card"}>
       <img
         src={src}
         className={`image ${size}`}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
         style={{ border: isHovered ? "5px solid #f50334" : "" }}
-        alt={`Tarot card representing ${names[x]}`}
+        alt={`tarot card representing ${cardName}`}
       />
       <div>{x === 4 && <p></p>}</div>
       <div id="name" style={{ color: isHovered ? "#fff" : "" }}>
-        {x === 4 && names[x]}
+        {x === 4 && cardName}
       </div>
     </div>
   );
@@ -90,7 +92,8 @@ function App() {
     strength,
     hangedMan,
     death,
-    // temperance,
+    temperance,
+    devil,
     tower,
     star,
   ]);
@@ -113,34 +116,39 @@ function App() {
     "Strength",
     "Hanged Man",
     "Death",
-    // "Temperance",
+    "Temperance",
+    "Devil",
     "Tower",
     "Star",
   ]);
 
-  function handleClick(event) {
+  const handleClick = (event) => {
     if (event.clientX < window.innerWidth / 2) {
-      const lastCard = cards.pop();
-      const lastCardName = names.pop();
-      const newCards = [lastCard, ...cards];
-      const newNames = [lastCardName, ...names];
+      let newCards = [...cards];
+      let newNames = [...names];
+      const lastCard = newCards.pop();
+      const lastCardName = newNames.pop();
+      newCards = [lastCard, ...newCards];
+      newNames = [lastCardName, ...newNames];
       setCards(newCards);
       setNames(newNames);
     } else {
-      const firstCard = cards.shift();
-      const firstCardName = names.shift();
-      const newCards = [...cards, firstCard];
-      const newNames = [...names, firstCardName];
+      let newCards = [...cards];
+      let newNames = [...names];
+      const firstCard = newCards.shift();
+      const firstCardName = newNames.shift();
+      newCards = [...newCards, firstCard];
+      newNames = [...newNames, firstCardName];
       setCards(newCards);
       setNames(newNames);
     }
-  }
+  };
 
   return (
     <div className="App" onClick={handleClick}>
       <header className="App-header">
         {cards.map((src, i) => (
-          <Card src={src} x={i} names={names} key={src} />
+          <Card src={src} x={i} cardName={names[i]} key={src} />
         ))}
       </header>
     </div>

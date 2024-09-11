@@ -3,6 +3,10 @@
 - Jump to the right.
 - No hover effect on full screen.
 
+I think I need to explicitly position the cards, rather than relying on the flow. Calculate them. Keep an array of them. On rendering, or actually in the App JSX, after rendering the cards invisibly, iterate through them, making those that should be visible visible and transitioning them from the screen position associated with their previous index to that of their current index.
+
+In that case, I don't need to transform the array. The array can stay the same. Each card needs an associated carousel index/marker/pointer/position, and each carousel position an associated screen position.
+
 ...................
 
 # Getting Started with Create React App

@@ -10,6 +10,11 @@
     transform 0.5s ease;
 }
 
+/* This doesn't work, because that would be too obvious: */
+/* .App .image:hover {
+  border: 5px solid #f50334;
+} */
+
 #name {
   color: silver;
   transition: color 0.2s ease;
