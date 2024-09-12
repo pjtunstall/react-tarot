@@ -16,7 +16,7 @@ import fortune from "./images/10_fortune.jpg";
 import strength from "./images/11_strength.jpg";
 import hangedMan from "./images/12_hanged.jpg";
 import death from "./images/13_death.jpg";
-import temperance from "./14_temperance.jpg";
+import temperance from "./images/14_temperance.jpg";
 import devil from "./images/15_devil.jpg";
 import tower from "./images/16_tower.jpg";
 import star from "./images/17_star.jpg";
