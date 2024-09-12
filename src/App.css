@@ -1,39 +1,43 @@
+:root {
+  --transition-time: 0.3s;
+}
+
 .App {
   text-align: center;
   height: 100vh;
   width: 100vw;
 }
 
-.image {
-  border: 5px solid #5d0113;
-  transition: width 0.5s ease, height 0.5s ease, border 0.2s ease,
-    transform 0.5s ease;
+.card {
+  transition: all var(--transition-time) ease-in-out;
+  user-select: none;
 }
 
-/* This doesn't work, because that would be too obvious: */
-/* .App .image:hover {
-  border: 5px solid #f50334;
-} */
-
-#name {
-  color: silver;
-  transition: color 0.2s ease;
+.image {
+  border: 5px solid #5d0113;
+  transition: all var(--transition-time) ease-in-out;
 }
 
 .image:hover {
-  border: 5px solid #f50334;
+  box-shadow: 0 0 10px 5px #5d0113;
 }
 
-.large-image:hover {
-  width: 66vmin;
+.title {
+  color: silver;
+  transition: all var(--transition-time) ease-in-out;
+  font-size: 5vmin;
 }
 
-.small-image:hover {
-  width: 22vmin;
+.flip {
+  animation: flip 0.15s ease-in-out;
 }
-
-.very-small-image:hover {
-  width: 11vmin;
+@keyframes flip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(90deg);
+  }
 }
 
 .large-image {
@@ -55,7 +59,7 @@
 }
 
 .very-very-small-image {
-  width: 5vmin;
+  width: 2vmin;
   height: auto;
   margin: 0 2.5px;
 }

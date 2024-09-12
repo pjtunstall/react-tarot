@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 
 import "./App.css";
 
@@ -25,56 +25,71 @@ import sun from "./images/19_sun.jpg";
 import judgement from "./images/20_judgement.jpg";
 import world from "./images/21_world.jpg";
 
-function Card({ src, x, cardName }) {
-  const [isHovered, setIsHovered] = useState(false);
+import sigil from "./images/sigil.jpg";
 
-  let size;
-  switch (x) {
-    case 1:
-      size = "very-very-small-image";
-      break;
-    case 2:
-      size = "very-small-image";
-      break;
-    case 3:
-      size = "small-image";
-      break;
-    case 4:
-      size = "large-image";
-      break;
-    case 5:
-      size = "small-image";
-      break;
-    case 6:
-      size = "very-small-image";
-      break;
-    case 7:
-      size = "very-very-small-image";
-      break;
-    default:
-      size = "hidden-image";
-  }
+function Card({ src, position, cardName, reverse }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFaceUp, setIsFaceUp] = useState(false);
+  const [animationClass, setAnimationClass] = useState("");
+
+  const getSizeClass = (pos) => {
+    const sizes = [
+      "very-very-small-image",
+      "very-small-image",
+      "small-image",
+      "large-image",
+      "small-image",
+      "very-small-image",
+      "very-very-small-image",
+    ];
+    return sizes[pos] || "hidden-image";
+  };
+
+  const size = getSizeClass(position);
+
+  const handleClick = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsFaceUp((prev) => !prev);
+    setAnimationClass("flip");
+    setTimeout(() => {
+      setAnimationClass("");
+    }, 300);
+  }, []);
+
   return (
-    <div id={cardName} className={"card"}>
+    <div
+      id={cardName}
+      className={`card ${animationClass}`}
+      onClick={handleClick}
+    >
       <img
-        src={src}
+        src={isFaceUp ? src : reverse}
         className={`image ${size}`}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
-        style={{ border: isHovered ? "5px solid #f50334" : "" }}
+        style={{
+          border: isHovered ? "5px solid #f50334" : "",
+        }}
         alt={`tarot card representing ${cardName}`}
       />
-      <div>{x === 4 && <p></p>}</div>
-      <div id="name" style={{ color: isHovered ? "#fff" : "" }}>
-        {x === 4 && cardName}
+      <div>{position === 3 && <p></p>}</div>
+      <div
+        className="title"
+        style={{
+          color: isHovered ? "#fff" : "",
+          opacity: isFaceUp ? "1" : "0",
+        }}
+      >
+        {position === 3 && cardName}
       </div>
     </div>
   );
 }
 
 function App() {
+  const transitionDuration = 300;
   const [cards, setCards] = useState([
-    moon,
     sun,
     judgement,
     world,
@@ -96,9 +111,9 @@ function App() {
     devil,
     tower,
     star,
+    moon,
   ]);
   const [names, setNames] = useState([
-    "Moon",
     "Sun",
     "Judgement",
     "World",
@@ -120,35 +135,76 @@ function App() {
     "Devil",
     "Tower",
     "Star",
+    "Moon",
   ]);
 
-  const handleClick = (event) => {
-    if (event.clientX < window.innerWidth / 2) {
-      let newCards = [...cards];
-      let newNames = [...names];
-      const lastCard = newCards.pop();
-      const lastCardName = newNames.pop();
-      newCards = [lastCard, ...newCards];
-      newNames = [lastCardName, ...newNames];
-      setCards(newCards);
-      setNames(newNames);
-    } else {
-      let newCards = [...cards];
-      let newNames = [...names];
-      const firstCard = newCards.shift();
-      const firstCardName = newNames.shift();
-      newCards = [...newCards, firstCard];
-      newNames = [...newNames, firstCardName];
-      setCards(newCards);
-      setNames(newNames);
-    }
-  };
+  const [isMoving, setIsMoving] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const moveCards = useCallback((direction) => {
+    setIsMoving(true);
+    setCards((prevCards) => {
+      const newCards = [...prevCards];
+      if (direction > 0) {
+        const lastCard = newCards.pop();
+        newCards.unshift(lastCard);
+      } else {
+        const firstCard = newCards.shift();
+        newCards.push(firstCard);
+      }
+      return newCards;
+    });
+
+    setNames((prevNames) => {
+      const newNames = [...prevNames];
+      if (direction > 0) {
+        const lastName = newNames.pop();
+        newNames.unshift(lastName);
+      } else {
+        const firstName = newNames.shift();
+        newNames.push(firstName);
+      }
+      return newNames;
+    });
+
+    timeoutRef.current = setTimeout(() => {
+      setIsMoving(false);
+    }, transitionDuration);
+  }, []);
+
+  const handleClick = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (isMoving) return;
+
+      if (event.clientX < window.innerWidth / 2) {
+        moveCards(1);
+      } else {
+        moveCards(-1);
+      }
+    },
+    [moveCards, isMoving]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="App" onClick={handleClick}>
       <header className="App-header">
-        {cards.map((src, i) => (
-          <Card src={src} x={i} cardName={names[i]} key={src} />
+        {cards.slice(0, 7).map((src, i) => (
+          <Card
+            src={src}
+            position={i}
+            cardName={names[i]}
+            reverse={sigil}
+            key={names[i]}
+          />
         ))}
       </header>
     </div>
