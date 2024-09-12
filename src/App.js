@@ -57,19 +57,26 @@ function Card({ src, position, cardName, reverse }) {
     }, 300);
   }, []);
 
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+  }, []);
+
   return (
-    <div
-      id={cardName}
-      className={`card ${animationClass}`}
-      onClick={handleClick}
-    >
+    <div id={cardName} className={"card"}>
       <img
         src={isFaceUp ? src : reverse}
-        className={`image ${size}`}
-        onMouseOver={() => setIsHovered(true)}
-        onMouseOut={() => setIsHovered(false)}
+        className={`image ${size} ${animationClass}`}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter} // In fullscreen mode, Chrome treats mouseEnter and mouseLeave, as well as mouseOver and mouseOut, as click listeners--usually. After a while of clicking, it sometimes starts treating them like hover listeners. Brave and Firefox work as expected.
+        onMouseLeave={handleMouseLeave}
         style={{
           border: isHovered ? "5px solid #f50334" : "",
+          boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
+          transform: isHovered ? "scale(1.1)" : "",
         }}
         alt={`tarot card representing ${cardName}`}
       />
@@ -114,28 +121,28 @@ function App() {
     moon,
   ]);
   const [names, setNames] = useState([
-    "Sun",
+    "The Sun",
     "Judgement",
-    "World",
-    "Fool",
-    "Magician",
-    "High Priestess",
-    "Emperor",
-    "Empress",
-    "Hierophant",
-    "Lovers",
-    "Chariot",
+    "The World",
+    "The Fool",
+    "The Magician",
+    "The High Priestess",
+    "The Emperor",
+    "The Empress",
+    "The Hierophant",
+    "The Lovers",
+    "The Chariot",
     "Justice",
-    "Hermit",
+    "The Hermit",
     "Fortune",
     "Strength",
-    "Hanged Man",
+    "The Hanged Man",
     "Death",
     "Temperance",
-    "Devil",
-    "Tower",
-    "Star",
-    "Moon",
+    "The Devil",
+    "The Tower",
+    "The Star",
+    "The Moon",
   ]);
 
   const [isMoving, setIsMoving] = useState(false);

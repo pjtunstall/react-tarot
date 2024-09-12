@@ -18,10 +18,6 @@
   transition: all var(--transition-time) ease-in-out;
 }
 
-.image:hover {
-  box-shadow: 0 0 10px 5px #5d0113;
-}
-
 .title {
   color: silver;
   transition: all var(--transition-time) ease-in-out;

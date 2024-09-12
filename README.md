@@ -1,8 +1,3 @@
-# Fix
-
-- Jump to the right.
-- No hover effect on full screen.
-
 ...................
 
 # Getting Started with Create React App
