@@ -4,6 +4,7 @@
 
 .App {
   text-align: center;
+  outline: none; /* remove the blue outline on click */
   height: 100vh;
   width: 100vw;
 }
@@ -16,6 +17,7 @@
 .image {
   border: 5px solid #5d0113;
   transition: all var(--transition-time) ease-in-out;
+  cursor: pointer;
 }
 
 .title {

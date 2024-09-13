@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 
 import "./App.css";
+import Card from "./Card.js";
 
 import fool from "./images/0_fool.jpg";
 import magician from "./images/1_magician.jpg";
@@ -14,7 +15,7 @@ import justice from "./images/8_justice.jpg";
 import chariot from "./images/7_chariot.jpg";
 import fortune from "./images/10_fortune.jpg";
 import strength from "./images/11_strength.jpg";
-import hangedMan from "./images/12_hanged.jpg";
+import hangedMan from "./images/12_hangedMan.jpg";
 import death from "./images/13_death.jpg";
 import temperance from "./images/14_temperance.jpg";
 import devil from "./images/15_devil.jpg";
@@ -27,76 +28,16 @@ import world from "./images/21_world.jpg";
 
 import sigil_2 from "./images/sigil_2.jpg";
 
-function Card({ src, position, cardName, reverse }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFaceUp, setIsFaceUp] = useState(false);
-  const [animationClass, setAnimationClass] = useState("");
-
-  const getSizeClass = (pos) => {
-    const sizes = [
-      "very-very-small-image",
-      "very-small-image",
-      "small-image",
-      "large-image",
-      "small-image",
-      "very-small-image",
-      "very-very-small-image",
-    ];
-    return sizes[pos] || "hidden-image";
-  };
-
-  const size = getSizeClass(position);
-
-  const handleClick = useCallback((event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsFaceUp((prev) => !prev);
-    setAnimationClass("flip");
-    setTimeout(() => {
-      setAnimationClass("");
-    }, 300);
-  }, []);
-
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-  }, []);
-
-  return (
-    <div id={cardName} className={"card"}>
-      <img
-        src={isFaceUp ? src : reverse}
-        className={`image ${size} ${animationClass}`}
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter} // In fullscreen mode, Chrome treats mouseEnter and mouseLeave, as well as mouseOver and mouseOut, as click listeners--usually. After a while of clicking, it occasionally starts treating them as hover listeners. Brave and Firefox work as expected, treating them as hover listeners.
-        onMouseLeave={handleMouseLeave}
-        style={{
-          border: isHovered ? "5px solid #f50334" : "",
-          boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
-          transform: isHovered ? "scale(1.1)" : "",
-        }}
-        alt={""}
-      />
-      <div>{position === 3 && <p></p>}</div>
-      <div
-        className="title"
-        style={{
-          color: isHovered ? "#fff" : "",
-          opacity: isFaceUp ? "1" : "0",
-        }}
-      >
-        {position === 3 && cardName}
-      </div>
-    </div>
-  );
-}
-
 function App() {
+  const appRef = useRef(null);
   const transitionDuration = 300;
-  const [cards, setCards] = useState([
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    appRef.current.focus();
+  }, []);
+
+  const initialCards = [
     sun,
     judgement,
     world,
@@ -119,37 +60,60 @@ function App() {
     tower,
     star,
     moon,
-  ]);
-  const [names, setNames] = useState([
-    "The Sun",
-    "Judgement",
-    "The World",
-    "The Fool",
-    "The Magician",
-    "The High Priestess",
-    "The Emperor",
-    "The Empress",
-    "The Hierophant",
-    "The Lovers",
-    "The Chariot",
-    "Justice",
-    "The Hermit",
-    "Fortune",
-    "Strength",
-    "The Hanged Man",
-    "Death",
-    "Temperance",
-    "The Devil",
-    "The Tower",
-    "The Star",
-    "The Moon",
-  ]);
+  ].map((src, index) => ({
+    src,
+    name: [
+      "The Sun",
+      "Judgement",
+      "The World",
+      "The Fool",
+      "The Magician",
+      "The High Priestess",
+      "The Emperor",
+      "The Empress",
+      "The Hierophant",
+      "The Lovers",
+      "The Chariot",
+      "Justice",
+      "The Hermit",
+      "Fortune",
+      "Strength",
+      "The Hanged Man",
+      "Death",
+      "Temperance",
+      "The Devil",
+      "The Tower",
+      "The Star",
+      "The Moon",
+    ][index],
+    isFaceUp: false,
+    isAnimating: false,
+  }));
+
+  const [cards, setCards] = useState(initialCards);
+  const [isMoving, setIsMoving] = useState(false);
 
   const sigils = [sigil_2];
   const sigil = useRef(sigils[Math.floor(Math.random() * sigils.length)]);
 
-  const [isMoving, setIsMoving] = useState(false);
-  const timeoutRef = useRef(null);
+  const handleCardClick = useCallback((event, i) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setCards((prevCards) =>
+      prevCards.map((card, index) =>
+        index === i
+          ? { ...card, isFaceUp: !card.isFaceUp, isAnimating: true }
+          : card
+      )
+    );
+    setTimeout(() => {
+      setCards((prevCards) =>
+        prevCards.map((card, index) =>
+          index === i ? { ...card, isAnimating: false } : card
+        )
+      );
+    }, 300);
+  }, []);
 
   const moveCards = useCallback((direction) => {
     setIsMoving(true);
@@ -165,18 +129,6 @@ function App() {
       return newCards;
     });
 
-    setNames((prevNames) => {
-      const newNames = [...prevNames];
-      if (direction > 0) {
-        const lastName = newNames.pop();
-        newNames.unshift(lastName);
-      } else {
-        const firstName = newNames.shift();
-        newNames.push(firstName);
-      }
-      return newNames;
-    });
-
     timeoutRef.current = setTimeout(() => {
       setIsMoving(false);
     }, transitionDuration);
@@ -186,10 +138,22 @@ function App() {
     (event) => {
       event.preventDefault();
       if (isMoving) return;
-
       if (event.clientX < window.innerWidth / 2) {
         moveCards(1);
       } else {
+        moveCards(-1);
+      }
+    },
+    [moveCards, isMoving]
+  );
+
+  const handleKeyDown = useCallback(
+    (event) => {
+      event.preventDefault();
+      if (isMoving) return;
+      if (event.code === "ArrowLeft") {
+        moveCards(1);
+      } else if (event.code === "ArrowRight") {
         moveCards(-1);
       }
     },
@@ -205,15 +169,24 @@ function App() {
   }, []);
 
   return (
-    <div className="App" onClick={handleClick}>
+    <div
+      className="App"
+      ref={appRef}
+      onClick={handleClick}
+      tabIndex="0"
+      onKeyDown={handleKeyDown}
+    >
       <header className="App-header">
-        {cards.slice(0, 7).map((src, i) => (
+        {cards.slice(0, 7).map((card, i) => (
           <Card
-            src={src}
+            src={card.src}
             position={i}
-            cardName={names[i]}
+            cardName={card.name}
             reverse={sigil.current}
-            key={names[i]}
+            onClick={(event) => handleCardClick(event, i)}
+            isFaceUp={card.isFaceUp}
+            isAnimating={card.isAnimating}
+            key={card.name}
           />
         ))}
       </header>
