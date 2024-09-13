@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 
 import "./App.css";
+
 import Card from "./Card.js";
 
 import fool from "./images/0_fool.jpg";
@@ -28,10 +29,15 @@ import world from "./images/21_world.jpg";
 
 import sigil_2 from "./images/sigil_2.jpg";
 
+import flipSound from "./sfx/flip.mp3";
+import shuffleSound from "./sfx/shuffle.mp3";
+
 function App() {
   const appRef = useRef(null);
   const timeoutRef = useRef(null);
   const transitionDuration = 300;
+  const clickCountRef = useRef(0);
+  const clickTimeoutRef = useRef(null);
 
   useEffect(() => {
     appRef.current.focus();
@@ -96,43 +102,8 @@ function App() {
   const sigils = [sigil_2];
   const sigil = useRef(sigils[Math.floor(Math.random() * sigils.length)]);
 
-  const handleCardClick = useCallback((event, i) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === i
-          ? { ...card, isFaceUp: !card.isFaceUp, isAnimating: true }
-          : card
-      )
-    );
-    setTimeout(() => {
-      setCards((prevCards) =>
-        prevCards.map((card, index) =>
-          index === i ? { ...card, isAnimating: false } : card
-        )
-      );
-    }, 300);
-  }, []);
-
-  const handleDoubleClick = useCallback(() => {
-    setCards((prevCards) => {
-      const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
-      const newFaceUpState = !areAllFaceUp;
-
-      return prevCards.map((card) => ({
-        ...card,
-        isFaceUp: newFaceUpState,
-        isAnimating: card.isFaceUp !== newFaceUpState,
-      }));
-    });
-
-    setTimeout(() => {
-      setCards((prevCards) =>
-        prevCards.map((card) => ({ ...card, isAnimating: false }))
-      );
-    }, 300);
-  }, []);
+  const flipAudioRef = useRef(new Audio(flipSound));
+  const shuffleAudioRef = useRef(new Audio(shuffleSound));
 
   const moveCards = useCallback((direction) => {
     setIsMoving(true);
@@ -153,18 +124,91 @@ function App() {
     }, transitionDuration);
   }, []);
 
-  const handleClick = useCallback(
+  const handleCardClick = useCallback((event, i) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const audioClone = flipAudioRef.current.cloneNode();
+    audioClone.play();
+
+    setTimeout(() => {
+      setCards((prevCards) =>
+        prevCards.map((card, index) =>
+          index === i
+            ? { ...card, isFaceUp: !card.isFaceUp, isAnimating: true }
+            : card
+        )
+      );
+      setTimeout(() => {
+        setCards((prevCards) =>
+          prevCards.map((card, index) =>
+            index === i ? { ...card, isAnimating: false } : card
+          )
+        );
+      }, transitionDuration);
+    }, 20);
+  }, []);
+
+  const handleClickOrDoubleClick = useCallback(
     (event) => {
       event.preventDefault();
       if (isMoving) return;
-      if (event.clientX < window.innerWidth / 2) {
-        moveCards(1);
-      } else {
-        moveCards(-1);
+
+      clickCountRef.current += 1;
+
+      if (clickCountRef.current === 1) {
+        clickTimeoutRef.current = setTimeout(() => {
+          if (clickCountRef.current === 1) {
+            // Single click action
+            if (event.clientX < window.innerWidth / 2) {
+              moveCards(1);
+            } else {
+              moveCards(-1);
+            }
+          }
+          clickCountRef.current = 0;
+        }, transitionDuration);
+      } else if (clickCountRef.current === 2) {
+        clearTimeout(clickTimeoutRef.current);
+        // Double click action
+        const audioClone = flipAudioRef.current.cloneNode();
+        audioClone.play();
+
+        setTimeout(() => {
+          setCards((prevCards) => {
+            const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
+            const newFaceUpState = !areAllFaceUp;
+
+            return prevCards.map((card) => ({
+              ...card,
+              isFaceUp: newFaceUpState,
+              isAnimating: card.isFaceUp !== newFaceUpState,
+            }));
+          });
+
+          setTimeout(() => {
+            setCards((prevCards) =>
+              prevCards.map((card) => ({ ...card, isAnimating: false }))
+            );
+          }, transitionDuration);
+        }, 20);
+
+        clickCountRef.current = 0;
       }
     },
-    [moveCards, isMoving]
+    [isMoving, moveCards]
   );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleKeyDown = useCallback(
     (event) => {
@@ -179,23 +223,54 @@ function App() {
     [moveCards, isMoving]
   );
 
+  const shuffleCards = useCallback(() => {
+    const audioClone = shuffleAudioRef.current.cloneNode();
+    audioClone.play();
+
+    setCards((prevCards) => {
+      // Create a copy of the cards array
+      const newCards = [...prevCards];
+
+      // Fisher-Yates shuffle algorithm
+      for (let i = newCards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
+      }
+
+      // Set all cards to face down and animate
+      return newCards.map((card) => ({
+        ...card,
+        isFaceUp: false,
+        isAnimating: true,
+      }));
+    });
+
+    // Reset animation state after transition
+    setTimeout(() => {
+      setCards((prevCards) =>
+        prevCards.map((card) => ({ ...card, isAnimating: false }))
+      );
+    }, 300);
+  }, []);
+
   useEffect(() => {
+    shuffleCards();
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, []);
+  }, [shuffleCards]);
 
   return (
     <div
       className="App"
       ref={appRef}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
+      onClick={handleClickOrDoubleClick}
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
+      <audio ref={flipAudioRef} src={flipSound} />
       <header className="App-header">
         {cards.slice(0, 7).map((card, i) => (
           <Card
@@ -210,6 +285,16 @@ function App() {
           />
         ))}
       </header>
+      <div className="controls">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            shuffleCards();
+          }}
+        >
+          Shuffle Cards
+        </button>
+      </div>
     </div>
   );
 }
