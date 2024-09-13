@@ -25,7 +25,7 @@ import sun from "./images/19_sun.jpg";
 import judgement from "./images/20_judgement.jpg";
 import world from "./images/21_world.jpg";
 
-import sigil from "./images/sigil.jpg";
+import sigil_2 from "./images/sigil_2.jpg";
 
 function Card({ src, position, cardName, reverse }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -71,14 +71,14 @@ function Card({ src, position, cardName, reverse }) {
         src={isFaceUp ? src : reverse}
         className={`image ${size} ${animationClass}`}
         onClick={handleClick}
-        onMouseEnter={handleMouseEnter} // In fullscreen mode, Chrome treats mouseEnter and mouseLeave, as well as mouseOver and mouseOut, as click listeners--usually. After a while of clicking, it sometimes starts treating them like hover listeners. Brave and Firefox work as expected.
+        onMouseEnter={handleMouseEnter} // In fullscreen mode, Chrome treats mouseEnter and mouseLeave, as well as mouseOver and mouseOut, as click listeners--usually. After a while of clicking, it occasionally starts treating them as hover listeners. Brave and Firefox work as expected, treating them as hover listeners.
         onMouseLeave={handleMouseLeave}
         style={{
           border: isHovered ? "5px solid #f50334" : "",
           boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
           transform: isHovered ? "scale(1.1)" : "",
         }}
-        alt={`tarot card representing ${cardName}`}
+        alt={""}
       />
       <div>{position === 3 && <p></p>}</div>
       <div
@@ -145,6 +145,9 @@ function App() {
     "The Moon",
   ]);
 
+  const sigils = [sigil_2];
+  const sigil = useRef(sigils[Math.floor(Math.random() * sigils.length)]);
+
   const [isMoving, setIsMoving] = useState(false);
   const timeoutRef = useRef(null);
 
@@ -209,7 +212,7 @@ function App() {
             src={src}
             position={i}
             cardName={names[i]}
-            reverse={sigil}
+            reverse={sigil.current}
             key={names[i]}
           />
         ))}
