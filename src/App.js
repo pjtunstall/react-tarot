@@ -30,8 +30,8 @@ import sigil_2 from "./images/sigil_2.jpg";
 
 function App() {
   const appRef = useRef(null);
-  const transitionDuration = 300;
   const timeoutRef = useRef(null);
+  const transitionDuration = 300;
 
   useEffect(() => {
     appRef.current.focus();
@@ -115,6 +115,25 @@ function App() {
     }, 300);
   }, []);
 
+  const handleDoubleClick = useCallback(() => {
+    setCards((prevCards) => {
+      const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
+      const newFaceUpState = !areAllFaceUp;
+
+      return prevCards.map((card) => ({
+        ...card,
+        isFaceUp: newFaceUpState,
+        isAnimating: card.isFaceUp !== newFaceUpState,
+      }));
+    });
+
+    setTimeout(() => {
+      setCards((prevCards) =>
+        prevCards.map((card) => ({ ...card, isAnimating: false }))
+      );
+    }, 300);
+  }, []);
+
   const moveCards = useCallback((direction) => {
     setIsMoving(true);
     setCards((prevCards) => {
@@ -173,6 +192,7 @@ function App() {
       className="App"
       ref={appRef}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
