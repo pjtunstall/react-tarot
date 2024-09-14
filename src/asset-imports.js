@@ -21,13 +21,11 @@ import sun from "./images/19_sun.jpg";
 import judgement from "./images/20_judgement.jpg";
 import world from "./images/21_world.jpg";
 
-import sigil_1 from "./images/sigil_1.jpg";
-import sigil_2 from "./images/sigil_2.jpg";
+const sigilsContext = require.context("./images/sigils", false, /\.jpg$/);
+const soundsContext = require.context("./sfx", false, /\.mp3$/);
 
-import cockSound from "./sfx/cock.mp3";
-import flipSound from "./sfx/flip.mp3";
-import owlSound from "./sfx/owl.mp3";
-import shuffleSound from "./sfx/shuffle.mp3";
+export const sigils = sigilsContext.keys().map(sigilsContext);
+export const sfx = soundsContext.keys().map(soundsContext);
 
 export const importedCards = [
   sun,
@@ -53,7 +51,3 @@ export const importedCards = [
   star,
   moon,
 ];
-
-export const sigils = [sigil_1, sigil_2];
-
-export const sfx = [cockSound, flipSound, owlSound, shuffleSound];
