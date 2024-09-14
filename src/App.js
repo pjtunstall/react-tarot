@@ -29,7 +29,9 @@ import world from "./images/21_world.jpg";
 
 import sigil_2 from "./images/sigil_2.jpg";
 
+import cockSound from "./sfx/cock.mp3";
 import flipSound from "./sfx/flip.mp3";
+import owlSound from "./sfx/owl.mp3";
 import shuffleSound from "./sfx/shuffle.mp3";
 
 function App() {
@@ -104,7 +106,9 @@ function App() {
   const sigils = [sigil_2];
   const sigil = useRef(sigils[Math.floor(Math.random() * sigils.length)]);
 
+  const cockAudioRef = useRef(new Audio(cockSound));
   const flipAudioRef = useRef(new Audio(flipSound));
+  const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
 
   const moveCards = useCallback((direction) => {
@@ -296,12 +300,15 @@ function App() {
             shuffleCards();
           }}
         >
-          🔄
+          🔀
         </button>
         <button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (theme === "light-theme") return;
+            const audioClone = cockAudioRef.current.cloneNode();
+            audioClone.play();
             setTheme("light-theme");
           }}
         >
@@ -311,6 +318,9 @@ function App() {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (theme === "dark-theme") return;
+            const audioClone = owlAudioRef.current.cloneNode();
+            audioClone.play();
             setTheme("dark-theme");
           }}
         >
