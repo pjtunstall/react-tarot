@@ -96,6 +96,8 @@ function App() {
     isAnimating: false,
   }));
 
+  const [theme, setTheme] = useState("dark-theme");
+
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
 
@@ -271,7 +273,7 @@ function App() {
       onKeyDown={handleKeyDown}
     >
       <audio ref={flipAudioRef} src={flipSound} />
-      <header className="App-header">
+      <header className={`App-header ${theme}`}>
         {cards.slice(0, 7).map((card, i) => (
           <Card
             src={card.src}
@@ -281,6 +283,7 @@ function App() {
             onClick={(event) => handleCardClick(event, i)}
             isFaceUp={card.isFaceUp}
             isAnimating={card.isAnimating}
+            theme={theme}
             key={card.name}
           />
         ))}
@@ -288,11 +291,30 @@ function App() {
       <div className="controls">
         <button
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             shuffleCards();
           }}
         >
-          Shuffle Cards
+          🔄
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setTheme("light-theme");
+          }}
+        >
+          ☀️
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setTheme("dark-theme");
+          }}
+        >
+          🌘
         </button>
       </div>
     </div>

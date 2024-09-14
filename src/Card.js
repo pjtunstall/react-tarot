@@ -8,6 +8,7 @@ function Card({
   isFaceUp,
   isAnimating,
   onClick,
+  theme,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const size = getSizeClass(position);
@@ -19,6 +20,15 @@ function Card({
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);
+
+  let titleColor = "";
+  if (isHovered) {
+    if (theme === "dark-theme") {
+      titleColor = "#fff";
+    } else {
+      titleColor = "#000";
+    }
+  }
 
   return (
     <div
@@ -43,9 +53,9 @@ function Card({
       />
       <div>{position === 3 && <p></p>}</div>
       <div
-        className="title"
+        className={`title title-${theme}`}
         style={{
-          color: isHovered ? "#fff" : "",
+          color: titleColor,
           opacity: isFaceUp ? "1" : "0",
         }}
       >

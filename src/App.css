@@ -13,7 +13,25 @@
   z-index: 2;
   position: fixed;
   top: 0;
-  left: 0;
+  right: 0;
+}
+
+.controls > button {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  font-size: 1.6em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #5d0113;
+  transition: all var(--transition-time) ease-in-out;
+  cursor: pointer;
+}
+
+.controls > button:hover {
+  background-color: #f50334;
+  box-shadow: 0 0 10px 5px #5d0113;
 }
 
 .card {
@@ -31,6 +49,14 @@
   color: silver;
   transition: all var(--transition-time) ease-in-out;
   font-size: 5vmin;
+}
+
+.title-dark-theme {
+  color: silver;
+}
+
+.title-light-theme {
+  color: #5d0113;
 }
 
 .flip {
@@ -74,13 +100,22 @@
 }
 
 .App-header {
-  background-color: rgb(16, 0, 0);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.dark-theme {
+  background-color: rgb(16, 0, 0);
+  color: white;
+}
+
+.light-theme {
+  background-color: rgb(240, 240, 240);
+  color: rgb(16, 0, 0);
 }
 
 .App-link {
