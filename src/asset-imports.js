@@ -10,7 +10,7 @@ import justice from "./images/8_justice.jpg";
 import chariot from "./images/7_chariot.jpg";
 import fortune from "./images/10_fortune.jpg";
 import strength from "./images/11_strength.jpg";
-import hangedMan from "./images/12_hangedMan.jpg";
+import hangedMan from "./images/12_hanged-man.jpg";
 import death from "./images/13_death.jpg";
 import temperance from "./images/14_temperance.jpg";
 import devil from "./images/15_devil.jpg";

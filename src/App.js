@@ -4,7 +4,7 @@ import "./App.css";
 
 import Card from "./Card.js";
 
-import { importedCards, sigils, sfx } from "./assets.js";
+import { importedCards, sigils, sfx } from "./asset-imports.js";
 
 function App() {
   const appRef = useRef(null);
@@ -51,9 +51,9 @@ function App() {
   }));
 
   const [theme, setTheme] = useState("dark-theme");
-
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
 
   const sigil = useRef(theme === "light-theme" ? sigil_1 : sigil_2);
 
@@ -170,14 +170,27 @@ function App() {
   const handleKeyDown = useCallback(
     (event) => {
       event.preventDefault();
+      if (event.code === "Space" && isSpacePressed) return;
       if (isMoving) return;
       if (event.code === "ArrowLeft") {
         moveCards(1);
       } else if (event.code === "ArrowRight") {
         moveCards(-1);
+      } else if (event.code === "Space") {
+        setIsSpacePressed(true);
+        handleCardClick(event, 3);
       }
     },
-    [moveCards, isMoving]
+    [moveCards, isMoving, handleCardClick, isSpacePressed]
+  );
+
+  const handleKeyUp = useCallback(
+    (event) => {
+      if (event.code === "Space") {
+        setIsSpacePressed(false);
+      }
+    },
+    [setIsSpacePressed]
   );
 
   const shuffleCards = useCallback(() => {
@@ -185,7 +198,6 @@ function App() {
     audioClone.play();
 
     setCards((prevCards) => {
-      // Create a copy of the cards array
       const newCards = [...prevCards];
 
       // Fisher-Yates shuffle algorithm
@@ -194,7 +206,6 @@ function App() {
         [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
       }
 
-      // Set all cards to face down and animate
       return newCards.map((card) => ({
         ...card,
         isFaceUp: false,
@@ -202,7 +213,6 @@ function App() {
       }));
     });
 
-    // Reset animation state after transition
     setTimeout(() => {
       setCards((prevCards) =>
         prevCards.map((card) => ({ ...card, isAnimating: false }))
@@ -263,6 +273,7 @@ function App() {
       onClick={handleClickOrDoubleClick}
       tabIndex="0"
       onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
     >
       <audio ref={flipAudioRef} src={flipSound} />
       <header className={`App-header ${theme}`}>
@@ -282,18 +293,18 @@ function App() {
       </header>
       <div className="controls">
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
             shuffleCards();
           }}
         >
           🔀
         </button>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
             if (theme === "light-theme") return;
             const audioClone = cockAudioRef.current.cloneNode();
             audioClone.play();
@@ -304,9 +315,9 @@ function App() {
           ☀️
         </button>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
             if (theme === "dark-theme") return;
             const audioClone = owlAudioRef.current.cloneNode();
             audioClone.play();
