@@ -219,6 +219,45 @@ function App() {
     };
   }, [shuffleCards]);
 
+  // Swipe
+  const startXRef = useRef();
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      startXRef.current = touch.clientX;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touch = e.changedTouches[0];
+      const endX = touch.clientX;
+      if (startXRef.current) {
+        const deltaX = startXRef.current - endX;
+        if (Math.abs(deltaX) > 50) {
+          if (deltaX > 0) {
+            console.log("Swiped left");
+            moveCards(-1);
+          } else {
+            console.log("Swiped right");
+            moveCards(1);
+          }
+        }
+      }
+    };
+
+    const currentAppRef = appRef.current;
+    if (currentAppRef) {
+      currentAppRef.addEventListener("touchstart", handleTouchStart);
+      currentAppRef.addEventListener("touchend", handleTouchEnd);
+    }
+
+    return () => {
+      if (currentAppRef) {
+        currentAppRef.removeEventListener("touchstart", handleTouchStart);
+        currentAppRef.removeEventListener("touchend", handleTouchEnd);
+      }
+    };
+  }, [moveCards]);
+
   return (
     <div
       className="App"
