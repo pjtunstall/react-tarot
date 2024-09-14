@@ -4,35 +4,7 @@ import "./App.css";
 
 import Card from "./Card.js";
 
-import fool from "./images/0_fool.jpg";
-import magician from "./images/1_magician.jpg";
-import highPriestess from "./images/2_high-priestess.jpg";
-import empress from "./images/3_empress.jpg";
-import hierophant from "./images/5_hierophant.jpg";
-import lovers from "./images/6_lovers.jpg";
-import hermit from "./images/9_hermit.jpg";
-import emperor from "./images/4_emperor.jpg";
-import justice from "./images/8_justice.jpg";
-import chariot from "./images/7_chariot.jpg";
-import fortune from "./images/10_fortune.jpg";
-import strength from "./images/11_strength.jpg";
-import hangedMan from "./images/12_hangedMan.jpg";
-import death from "./images/13_death.jpg";
-import temperance from "./images/14_temperance.jpg";
-import devil from "./images/15_devil.jpg";
-import tower from "./images/16_tower.jpg";
-import star from "./images/17_star.jpg";
-import moon from "./images/18_moon.jpg";
-import sun from "./images/19_sun.jpg";
-import judgement from "./images/20_judgement.jpg";
-import world from "./images/21_world.jpg";
-
-import sigil_2 from "./images/sigil_2.jpg";
-
-import cockSound from "./sfx/cock.mp3";
-import flipSound from "./sfx/flip.mp3";
-import owlSound from "./sfx/owl.mp3";
-import shuffleSound from "./sfx/shuffle.mp3";
+import { importedCards, sigils, sfx } from "./assets.js";
 
 function App() {
   const appRef = useRef(null);
@@ -41,34 +13,14 @@ function App() {
   const clickCountRef = useRef(0);
   const clickTimeoutRef = useRef(null);
 
+  const [sigil_1, sigil_2] = sigils;
+  const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
+
   useEffect(() => {
     appRef.current.focus();
   }, []);
 
-  const initialCards = [
-    sun,
-    judgement,
-    world,
-    fool,
-    magician,
-    highPriestess,
-    emperor,
-    empress,
-    hierophant,
-    lovers,
-    chariot,
-    justice,
-    hermit,
-    fortune,
-    strength,
-    hangedMan,
-    death,
-    temperance,
-    devil,
-    tower,
-    star,
-    moon,
-  ].map((src, index) => ({
+  const initialCards = importedCards.map((src, index) => ({
     src,
     name: [
       "The Sun",
@@ -103,8 +55,7 @@ function App() {
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
 
-  const sigils = [sigil_2];
-  const sigil = useRef(sigils[Math.floor(Math.random() * sigils.length)]);
+  const sigil = useRef(theme === "light-theme" ? sigil_1 : sigil_2);
 
   const cockAudioRef = useRef(new Audio(cockSound));
   const flipAudioRef = useRef(new Audio(flipSound));
@@ -310,6 +261,7 @@ function App() {
             const audioClone = cockAudioRef.current.cloneNode();
             audioClone.play();
             setTheme("light-theme");
+            sigil.current = sigil_1;
           }}
         >
           ☀️
@@ -322,6 +274,7 @@ function App() {
             const audioClone = owlAudioRef.current.cloneNode();
             audioClone.play();
             setTheme("dark-theme");
+            sigil.current = sigil_2;
           }}
         >
           🌘
