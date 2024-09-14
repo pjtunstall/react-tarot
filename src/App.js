@@ -234,9 +234,9 @@ function App() {
         const deltaX = startXRef.current - endX;
         if (Math.abs(deltaX) > 50) {
           if (deltaX > 0) {
-            moveCards(1); // Swipe left
+            moveCards(-1); // Swipe left
           } else {
-            moveCards(-1); // Swipe right
+            moveCards(1); // Swipe right
           }
         }
       }
