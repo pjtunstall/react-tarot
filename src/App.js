@@ -54,7 +54,7 @@ function App() {
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [areImagesLoaded, setareImagesLoaded] = useState(false);
 
   const preloadImages = useCallback(() => {
     const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
@@ -67,7 +67,7 @@ function App() {
       img.onload = () => {
         loadedCount++;
         if (loadedCount === totalImages) {
-          setImagesLoaded(true);
+          setareImagesLoaded(true);
         }
       };
       img.src = src;
@@ -109,7 +109,7 @@ function App() {
       event.preventDefault();
       event.stopPropagation();
 
-      if (!imagesLoaded) return;
+      if (!areImagesLoaded) return;
 
       const audioClone = flipAudioRef.current.cloneNode();
       audioClone.play();
@@ -130,7 +130,7 @@ function App() {
         );
       }, transitionDuration);
     },
-    [imagesLoaded]
+    [areImagesLoaded]
   );
 
   const flipAllCards = () => {
@@ -309,7 +309,7 @@ function App() {
     >
       <audio ref={flipAudioRef} src={flipSound} />
       <header className={`App-header ${theme}`}>
-        {imagesLoaded ? (
+        {areImagesLoaded ? (
           cards
             .slice(0, 7)
             .map((card, i) => (
