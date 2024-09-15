@@ -201,10 +201,6 @@ function App() {
   );
 
   const shuffleCards = useCallback(() => {
-    // To preload the images.
-    flipAllCards();
-    flipAllCards();
-
     const audioClone = shuffleAudioRef.current.cloneNode();
     audioClone.play();
 
