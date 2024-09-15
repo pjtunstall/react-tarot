@@ -82,8 +82,7 @@ function App() {
       })
       .catch((error) => {
         console.error("Failed to load some images:", error);
-        // Optionally, you could still set areImagesLoaded to true here,
-        // depending on how you want to handle partial failures
+        // Could set areImagesLoaded to true here, if partial failures are acceptable.
       });
   }, [sigil_1, sigil_2]);
 
