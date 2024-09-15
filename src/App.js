@@ -109,6 +109,19 @@ function App() {
     }, 20);
   }, []);
 
+  const flipAllCards = () => {
+    setCards((prevCards) => {
+      const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
+      const newFaceUpState = !areAllFaceUp;
+
+      return prevCards.map((card) => ({
+        ...card,
+        isFaceUp: newFaceUpState,
+        isAnimating: card.isFaceUp !== newFaceUpState,
+      }));
+    });
+  };
+
   const handleClickOrDoubleClick = useCallback(
     (event) => {
       event.preventDefault();
@@ -135,16 +148,7 @@ function App() {
         audioClone.play();
 
         setTimeout(() => {
-          setCards((prevCards) => {
-            const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
-            const newFaceUpState = !areAllFaceUp;
-
-            return prevCards.map((card) => ({
-              ...card,
-              isFaceUp: newFaceUpState,
-              isAnimating: card.isFaceUp !== newFaceUpState,
-            }));
-          });
+          flipAllCards();
 
           setTimeout(() => {
             setCards((prevCards) =>
@@ -197,6 +201,10 @@ function App() {
   );
 
   const shuffleCards = useCallback(() => {
+    // To preload the images.
+    flipAllCards();
+    flipAllCards();
+
     const audioClone = shuffleAudioRef.current.cloneNode();
     audioClone.play();
 
