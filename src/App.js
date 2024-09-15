@@ -1,9 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
-
 import "./App.css";
-
 import Card from "./Card.js";
-
 import { cardImageFolders, sigils, sfx } from "./asset-imports.js";
 
 function App() {
@@ -57,6 +54,29 @@ function App() {
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  const preloadImages = useCallback(() => {
+    const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
+
+    let loadedCount = 0;
+    const totalImages = imagesToLoad.length;
+
+    imagesToLoad.forEach((src) => {
+      const img = new Image();
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true);
+        }
+      };
+      img.src = src;
+    });
+  }, [sigil_1, sigil_2]);
+
+  useEffect(() => {
+    preloadImages();
+  }, [preloadImages]);
 
   const sigil = useRef(theme === "light-theme" ? sigil_1 : sigil_2);
 
@@ -84,14 +104,16 @@ function App() {
     }, transitionDuration);
   }, []);
 
-  const handleCardClick = useCallback((event, i) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleCardClick = useCallback(
+    (event, i) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    const audioClone = flipAudioRef.current.cloneNode();
-    audioClone.play();
+      if (!imagesLoaded) return;
 
-    setTimeout(() => {
+      const audioClone = flipAudioRef.current.cloneNode();
+      audioClone.play();
+
       setCards((prevCards) =>
         prevCards.map((card, index) =>
           index === i
@@ -99,6 +121,7 @@ function App() {
             : card
         )
       );
+
       setTimeout(() => {
         setCards((prevCards) =>
           prevCards.map((card, index) =>
@@ -106,8 +129,9 @@ function App() {
           )
         );
       }, transitionDuration);
-    }, 20);
-  }, []);
+    },
+    [imagesLoaded]
+  );
 
   const flipAllCards = () => {
     setCards((prevCards) => {
@@ -285,20 +309,27 @@ function App() {
     >
       <audio ref={flipAudioRef} src={flipSound} />
       <header className={`App-header ${theme}`}>
-        {cards.slice(0, 7).map((card, i) => (
-          <Card
-            src={card.src}
-            position={i}
-            cardName={card.name}
-            reverse={sigil.current}
-            onClick={(event) => handleCardClick(event, i)}
-            isFaceUp={card.isFaceUp}
-            isAnimating={card.isAnimating}
-            theme={theme}
-            key={card.name}
-          />
-        ))}
+        {imagesLoaded ? (
+          cards
+            .slice(0, 7)
+            .map((card, i) => (
+              <Card
+                src={card.src}
+                position={i}
+                cardName={card.name}
+                reverse={sigil.current}
+                onClick={(event) => handleCardClick(event, i)}
+                isFaceUp={card.isFaceUp}
+                isAnimating={card.isAnimating}
+                theme={theme}
+                key={card.name}
+              />
+            ))
+        ) : (
+          <div>Loading...</div>
+        )}
       </header>
+
       <div className="controls">
         <button
           onClick={(event) => {
