@@ -2,9 +2,7 @@
 
 ## Random picture pools
 
-Introduce logic to pick an image at random from an array of possibilities for each card.
-
-## More diverse pictures
+Add a few more choices for those that don't have them yet.
 
 ## Preload images
 

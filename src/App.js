@@ -4,7 +4,7 @@ import "./App.css";
 
 import Card from "./Card.js";
 
-import { importedCards, sigils, sfx } from "./asset-imports.js";
+import { cardImageFolders, sigils, sfx } from "./asset-imports.js";
 
 function App() {
   const appRef = useRef(null);
@@ -20,32 +20,35 @@ function App() {
     appRef.current.focus();
   }, []);
 
-  const initialCards = importedCards.map((src, index) => ({
-    src,
-    name: [
-      "The Sun",
-      "Judgement",
-      "The World",
-      "The Fool",
-      "The Magician",
-      "The High Priestess",
-      "The Emperor",
-      "The Empress",
-      "The Hierophant",
-      "The Lovers",
-      "The Chariot",
-      "Justice",
-      "The Hermit",
-      "Fortune",
-      "Strength",
-      "The Hanged Man",
-      "Death",
-      "Temperance",
-      "The Devil",
-      "The Tower",
-      "The Star",
-      "The Moon",
-    ][index],
+  const cardNames = [
+    "The Fool",
+    "The Magician",
+    "The High Priestess",
+    "The Empress",
+    "The Emperor",
+    "The Hierophant",
+    "The Lovers",
+    "The Chariot",
+    "Justice",
+    "The Hermit",
+    "The Wheel of Fortune",
+    "Strength",
+    "The Hanged One",
+    "Death",
+    "Temperance",
+    "The Devil",
+    "The Tower",
+    "The Star",
+    "The Moon",
+    "The Sun",
+    "Judgment",
+    "The World",
+  ];
+
+  const initialCards = cardImageFolders.map((srcs, index) => ({
+    srcs,
+    src: srcs[0],
+    name: cardNames[index],
     isFaceUp: false,
     isAnimating: false,
   }));
@@ -200,14 +203,15 @@ function App() {
     setCards((prevCards) => {
       const newCards = [...prevCards];
 
-      // Fisher-Yates shuffle algorithm
       for (let i = newCards.length - 1; i > 0; i--) {
+        // Fisher-Yates shuffle algorithm.
         const j = Math.floor(Math.random() * (i + 1));
         [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
       }
 
       return newCards.map((card) => ({
         ...card,
+        src: card.srcs[Math.floor(Math.random() * card.srcs.length)],
         isFaceUp: false,
         isAnimating: true,
       }));
