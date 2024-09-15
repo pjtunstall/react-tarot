@@ -54,7 +54,8 @@ function App() {
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const [areImagesLoaded, setareImagesLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [areImagesLoaded, setAreImagesLoaded] = useState(false);
 
   const preloadImages = useCallback(() => {
     const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
@@ -62,16 +63,28 @@ function App() {
     let loadedCount = 0;
     const totalImages = imagesToLoad.length;
 
-    imagesToLoad.forEach((src) => {
-      const img = new Image();
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === totalImages) {
-          setareImagesLoaded(true);
-        }
-      };
-      img.src = src;
-    });
+    const loadImage = (src) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = src;
+      });
+    };
+
+    Promise.all(imagesToLoad.map(loadImage))
+      .then(() => {
+        setAreImagesLoaded(true);
+      })
+      .catch((error) => {
+        console.error("Failed to load some images:", error);
+        // Optionally, you could still set areImagesLoaded to true here,
+        // depending on how you want to handle partial failures
+      });
   }, [sigil_1, sigil_2]);
 
   useEffect(() => {
@@ -298,6 +311,19 @@ function App() {
     };
   }, [moveCards]);
 
+  const LoadingScreen = () => (
+    <div className="loading-screen">
+      <h2>Loading Tarot Cards</h2>
+      <div className="progress-bar">
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${loadingProgress}%` }}
+        ></div>
+      </div>
+      <p>{loadingProgress}% loaded</p>
+    </div>
+  );
+
   return (
     <div
       className="App"
@@ -308,11 +334,10 @@ function App() {
       onKeyUp={handleKeyUp}
     >
       <audio ref={flipAudioRef} src={flipSound} />
-      <header className={`App-header ${theme}`}>
-        {areImagesLoaded ? (
-          cards
-            .slice(0, 7)
-            .map((card, i) => (
+      {areImagesLoaded ? (
+        <>
+          <header className={`App-header ${theme}`}>
+            {cards.slice(0, 7).map((card, i) => (
               <Card
                 src={card.src}
                 position={i}
@@ -324,49 +349,50 @@ function App() {
                 theme={theme}
                 key={card.name}
               />
-            ))
-        ) : (
-          <div>Loading...</div>
-        )}
-      </header>
+            ))}
+          </header>
 
-      <div className="controls">
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            shuffleCards();
-          }}
-        >
-          🔀
-        </button>
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            if (theme === "light-theme") return;
-            const audioClone = cockAudioRef.current.cloneNode();
-            audioClone.play();
-            setTheme("light-theme");
-            sigil.current = sigil_1;
-          }}
-        >
-          ☀️
-        </button>
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            if (theme === "dark-theme") return;
-            const audioClone = owlAudioRef.current.cloneNode();
-            audioClone.play();
-            setTheme("dark-theme");
-            sigil.current = sigil_2;
-          }}
-        >
-          🌘
-        </button>
-      </div>
+          <div className="controls">
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                shuffleCards();
+              }}
+            >
+              🔀
+            </button>
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (theme === "light-theme") return;
+                const audioClone = cockAudioRef.current.cloneNode();
+                audioClone.play();
+                setTheme("light-theme");
+                sigil.current = sigil_1;
+              }}
+            >
+              ☀️
+            </button>
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (theme === "dark-theme") return;
+                const audioClone = owlAudioRef.current.cloneNode();
+                audioClone.play();
+                setTheme("dark-theme");
+                sigil.current = sigil_2;
+              }}
+            >
+              🌘
+            </button>
+          </div>
+        </>
+      ) : (
+        <LoadingScreen />
+      )}
     </div>
   );
 }

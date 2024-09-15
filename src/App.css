@@ -119,3 +119,27 @@
 .App-link {
   color: #f6adbd;
 }
+
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgb(16, 0, 0);
+  color: white;
+}
+
+.progress-bar {
+  width: 300px;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #f50334;
+  transition: width 0.5s ease-out;
+}
