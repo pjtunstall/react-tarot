@@ -9,7 +9,6 @@ function App() {
   const transitionDuration = 300;
   const clickCountRef = useRef(0);
   const clickTimeoutRef = useRef(null);
-
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
 
@@ -341,29 +340,40 @@ function preloadImages(
   setAreImagesLoaded
 ) {
   const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
-
-  let loadedCount = 0;
   const totalImages = imagesToLoad.length;
 
   const loadImage = (src) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => {
-        loadedCount++;
-        setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
-        resolve();
-      };
-      img.onerror = reject;
+      img.onload = () => resolve({ status: "fulfilled", value: src });
+      img.onerror = () =>
+        resolve({ status: "rejected", reason: `Failed to load ${src}` });
       img.src = src;
     });
   };
 
-  Promise.all(imagesToLoad.map(loadImage))
-    .then(() => {
+  Promise.allSettled(imagesToLoad.map(loadImage))
+    .then((results) => {
+      const loadedCount = results.filter(
+        (result) => result.status === "fulfilled"
+      ).length;
+      setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
+
+      const failedImages = results.filter(
+        (result) => result.status === "rejected"
+      );
+      if (failedImages.length > 0) {
+        console.warn(
+          `Failed to load ${failedImages.length} images:`,
+          failedImages.map((result) => result.reason)
+        );
+      }
+
       setAreImagesLoaded(true);
     })
     .catch((error) => {
-      console.error("Failed to load some images:", error);
+      console.error("Unexpected error during image loading:", error);
+      setAreImagesLoaded(true);
     });
 }
 
