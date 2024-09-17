@@ -310,19 +310,6 @@ function App() {
     };
   }, [moveCards]);
 
-  const LoadingScreen = () => (
-    <div className="loading-screen">
-      <h2>Loading Tarot Cards</h2>
-      <div className="progress-bar">
-        <div
-          className="progress-bar-fill"
-          style={{ width: `${loadingProgress}%` }}
-        ></div>
-      </div>
-      <p>{loadingProgress}% loaded</p>
-    </div>
-  );
-
   return (
     <div
       className="App"
@@ -361,37 +348,70 @@ function App() {
             >
               🔀
             </button>
-            <button
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (theme === "light-theme") return;
-                const audioClone = cockAudioRef.current.cloneNode();
-                audioClone.play();
-                setTheme("light-theme");
-                sigil.current = sigil_1;
-              }}
-            >
-              ☀️
-            </button>
-            <button
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (theme === "dark-theme") return;
-                const audioClone = owlAudioRef.current.cloneNode();
-                audioClone.play();
-                setTheme("dark-theme");
-                sigil.current = sigil_2;
-              }}
-            >
-              🌘
-            </button>
+            <ThemeChangeButton
+              newTheme="light-theme"
+              newSigil={sigil_1}
+              theme={theme}
+              setTheme={setTheme}
+              icon="☀️"
+              sigil={sigil}
+              audioRef={cockAudioRef}
+            />
+            <ThemeChangeButton
+              newTheme="dark-theme"
+              newSigil={sigil_2}
+              theme={theme}
+              setTheme={setTheme}
+              icon="🌘"
+              sigil={sigil}
+              audioRef={owlAudioRef}
+            />
           </div>
         </>
       ) : (
-        <LoadingScreen />
+        <LoadingScreen loadingProgress={loadingProgress} />
       )}
+    </div>
+  );
+}
+
+function ThemeChangeButton({
+  newTheme,
+  newSigil,
+  theme,
+  setTheme,
+  icon,
+  sigil,
+  audioRef,
+}) {
+  return (
+    <button
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (newTheme === theme) return;
+        const audioClone = audioRef.current.cloneNode();
+        audioClone.play();
+        setTheme(newTheme);
+        sigil.current = newSigil;
+      }}
+    >
+      {icon}
+    </button>
+  );
+}
+
+function LoadingScreen({ loadingProgress }) {
+  return (
+    <div className="loading-screen">
+      <h2>Loading Tarot Cards</h2>
+      <div className="progress-bar">
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${loadingProgress}%` }}
+        ></div>
+      </div>
+      <p>{loadingProgress}% loaded</p>
     </div>
   );
 }
