@@ -13,10 +13,6 @@ function App() {
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
 
-  useEffect(() => {
-    appRef.current.focus();
-  }, []);
-
   const cardNames = [
     "The Fool",
     "The Magician",
@@ -198,17 +194,6 @@ function App() {
     [isMoving, moveCards]
   );
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-    };
-  }, []);
-
   const handleKeyDown = useCallback(
     (event) => {
       event.preventDefault();
@@ -263,15 +248,6 @@ function App() {
     }, 300);
   }, []);
 
-  useEffect(() => {
-    shuffleCards();
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [shuffleCards]);
-
   // Swipe
   const startXRef = useRef();
   useEffect(() => {
@@ -309,6 +285,21 @@ function App() {
     };
   }, [moveCards]);
 
+  useEffect(() => {
+    shuffleCards();
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [shuffleCards]);
+
+  useEffect(() => {
+    appRef.current.focus();
+
+    return () => handleCarouselCleanup(timeoutRef, clickTimeoutRef);
+  }, []);
+
   return (
     <div
       className="App"
@@ -321,7 +312,7 @@ function App() {
       <audio ref={flipAudioRef} src={flipSound} />
       {areImagesLoaded ? (
         <>
-          <header className={`carousel ${theme}`}>
+          <div className={`carousel ${theme}`}>
             {cards.slice(0, 7).map((card, i) => (
               <Card
                 src={card.src}
@@ -335,7 +326,7 @@ function App() {
                 key={card.name}
               />
             ))}
-          </header>
+          </div>
 
           <div className="controls">
             <button
@@ -374,6 +365,15 @@ function App() {
   );
 }
 
+function handleCarouselCleanup(timeoutRef, clickTimeoutRef) {
+  if (timeoutRef.current) {
+    clearTimeout(timeoutRef.current);
+  }
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+}
+
 function ThemeChangeButton({
   newTheme,
   newSigil,
@@ -403,7 +403,7 @@ function ThemeChangeButton({
 function LoadingScreen({ loadingProgress }) {
   return (
     <div className="loading-screen">
-      <h2>Loading Tarot Cards</h2>
+      <h2>Loading the Cards</h2>
       <div className="progress-bar">
         <div
           className="progress-bar-fill"
