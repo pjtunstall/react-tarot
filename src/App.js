@@ -52,106 +52,17 @@ function App() {
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [areImagesLoaded, setAreImagesLoaded] = useState(false);
-
-  const preloadImages = useCallback(() => {
-    const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
-
-    let loadedCount = 0;
-    const totalImages = imagesToLoad.length;
-
-    const loadImage = (src) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          loadedCount++;
-          setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
-          resolve();
-        };
-        img.onerror = reject;
-        img.src = src;
-      });
-    };
-
-    Promise.all(imagesToLoad.map(loadImage))
-      .then(() => {
-        setAreImagesLoaded(true);
-      })
-      .catch((error) => {
-        console.error("Failed to load some images:", error);
-      });
-  }, [sigil_1, sigil_2]);
-
-  useEffect(() => {
-    preloadImages();
-  }, [preloadImages]);
-
   const sigil = useRef(theme === "light-theme" ? sigil_1 : sigil_2);
-
   const cockAudioRef = useRef(new Audio(cockSound));
   const flipAudioRef = useRef(new Audio(flipSound));
   const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
 
-  const moveCards = useCallback((direction) => {
-    setIsMoving(true);
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-      if (direction > 0) {
-        const lastCard = newCards.pop();
-        newCards.unshift(lastCard);
-      } else {
-        const firstCard = newCards.shift();
-        newCards.push(firstCard);
-      }
-      return newCards;
-    });
-
-    timeoutRef.current = setTimeout(() => {
-      setIsMoving(false);
-    }, transitionDuration);
+  const handleCardClick = useCallback((event, indexToFlip) => {
+    event.preventDefault();
+    event.stopPropagation();
+    flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
   }, []);
-
-  const handleCardClick = useCallback(
-    (event, i) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (!areImagesLoaded) return;
-
-      const audioClone = flipAudioRef.current.cloneNode();
-      audioClone.play();
-
-      setCards((prevCards) =>
-        prevCards.map((card, index) =>
-          index === i
-            ? { ...card, isFaceUp: !card.isFaceUp, isAnimating: true }
-            : card
-        )
-      );
-
-      setTimeout(() => {
-        setCards((prevCards) =>
-          prevCards.map((card, index) =>
-            index === i ? { ...card, isAnimating: false } : card
-          )
-        );
-      }, transitionDuration);
-    },
-    [areImagesLoaded]
-  );
-
-  const flipAllCards = () => {
-    setCards((prevCards) => {
-      const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
-      const newFaceUpState = !areAllFaceUp;
-
-      return prevCards.map((card) => ({
-        ...card,
-        isFaceUp: newFaceUpState,
-        isAnimating: card.isFaceUp !== newFaceUpState,
-      }));
-    });
-  };
 
   const handleClickOrDoubleClick = useCallback(
     (event) => {
@@ -165,9 +76,19 @@ function App() {
           if (clickCountRef.current === 1) {
             // Single click action
             if (event.clientX < window.innerWidth / 2) {
-              moveCards(1);
+              timeoutRef.current = moveCards(
+                1,
+                setCards,
+                setIsMoving,
+                transitionDuration
+              );
             } else {
-              moveCards(-1);
+              timeoutRef.current = moveCards(
+                -1,
+                setCards,
+                setIsMoving,
+                transitionDuration
+              );
             }
           }
           clickCountRef.current = 0;
@@ -179,7 +100,7 @@ function App() {
         audioClone.play();
 
         setTimeout(() => {
-          flipAllCards();
+          flipAllCards(setCards);
 
           setTimeout(() => {
             setCards((prevCards) =>
@@ -191,7 +112,7 @@ function App() {
         clickCountRef.current = 0;
       }
     },
-    [isMoving, moveCards]
+    [isMoving]
   );
 
   const handleKeyDown = useCallback(
@@ -200,15 +121,25 @@ function App() {
       if (event.code === "Space" && isSpacePressed) return;
       if (isMoving) return;
       if (event.code === "ArrowLeft") {
-        moveCards(1);
+        timeoutRef.current = moveCards(
+          1,
+          setCards,
+          setIsMoving,
+          transitionDuration
+        );
       } else if (event.code === "ArrowRight") {
-        moveCards(-1);
+        timeoutRef.current = moveCards(
+          -1,
+          setCards,
+          setIsMoving,
+          transitionDuration
+        );
       } else if (event.code === "Space") {
         setIsSpacePressed(true);
         handleCardClick(event, 3);
       }
     },
-    [moveCards, isMoving, handleCardClick, isSpacePressed]
+    [isMoving, handleCardClick, isSpacePressed]
   );
 
   const handleKeyUp = useCallback(
@@ -219,34 +150,6 @@ function App() {
     },
     [setIsSpacePressed]
   );
-
-  const shuffleCards = useCallback(() => {
-    const audioClone = shuffleAudioRef.current.cloneNode();
-    audioClone.play();
-
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-
-      for (let i = newCards.length - 1; i > 0; i--) {
-        // Fisher-Yates shuffle algorithm.
-        const j = Math.floor(Math.random() * (i + 1));
-        [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
-      }
-
-      return newCards.map((card) => ({
-        ...card,
-        src: card.srcs[Math.floor(Math.random() * card.srcs.length)],
-        isFaceUp: false,
-        isAnimating: true,
-      }));
-    });
-
-    setTimeout(() => {
-      setCards((prevCards) =>
-        prevCards.map((card) => ({ ...card, isAnimating: false }))
-      );
-    }, 300);
-  }, []);
 
   // Swipe
   const startXRef = useRef();
@@ -263,9 +166,20 @@ function App() {
         const deltaX = startXRef.current - endX;
         if (Math.abs(deltaX) > 50) {
           if (deltaX > 0) {
-            moveCards(-1); // Swipe left
+            timeoutRef.current = moveCards(
+              -1,
+              setCards,
+              setIsMoving,
+              timeoutRef,
+              transitionDuration
+            ); // Swipe left
           } else {
-            moveCards(1); // Swipe right
+            timeoutRef.current = moveCards(
+              1,
+              setCards,
+              setIsMoving,
+              transitionDuration
+            ); // Swipe right
           }
         }
       }
@@ -283,22 +197,26 @@ function App() {
         currentAppRef.removeEventListener("touchend", handleTouchEnd);
       }
     };
-  }, [moveCards]);
+  });
 
   useEffect(() => {
-    shuffleCards();
+    shuffleCards(shuffleAudioRef, setCards, transitionDuration);
+    appRef.current.focus();
+    preloadImages(
+      cardImageFolders,
+      sigil_1,
+      sigil_2,
+      setLoadingProgress,
+      setAreImagesLoaded
+    );
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        handleCarouselCleanup(timeoutRef, clickTimeoutRef);
       }
     };
-  }, [shuffleCards]);
-
-  useEffect(() => {
-    appRef.current.focus();
-
-    return () => handleCarouselCleanup(timeoutRef, clickTimeoutRef);
-  }, []);
+  }, [sigil_1, sigil_2]);
 
   return (
     <div
@@ -313,13 +231,13 @@ function App() {
       {areImagesLoaded ? (
         <>
           <div className={`carousel ${theme}`}>
-            {cards.slice(0, 7).map((card, i) => (
+            {cards.slice(0, 7).map((card, index) => (
               <Card
                 front={card.src}
-                position={i}
+                position={index}
                 cardName={card.name}
                 back={sigil.current}
-                onClick={(event) => handleCardClick(event, i)}
+                onClick={(event) => handleCardClick(event, index)}
                 isFaceUp={card.isFaceUp}
                 isAnimating={card.isAnimating}
                 theme={theme}
@@ -333,7 +251,7 @@ function App() {
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                shuffleCards();
+                shuffleCards(shuffleAudioRef, setCards, transitionDuration);
               }}
             >
               🔀
@@ -413,6 +331,121 @@ function LoadingScreen({ loadingProgress }) {
       <p>{loadingProgress}% loaded</p>
     </div>
   );
+}
+
+function preloadImages(
+  cardImageFolders,
+  sigil_1,
+  sigil_2,
+  setLoadingProgress,
+  setAreImagesLoaded
+) {
+  const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
+
+  let loadedCount = 0;
+  const totalImages = imagesToLoad.length;
+
+  const loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        loadedCount++;
+        setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
+
+  Promise.all(imagesToLoad.map(loadImage))
+    .then(() => {
+      setAreImagesLoaded(true);
+    })
+    .catch((error) => {
+      console.error("Failed to load some images:", error);
+    });
+}
+
+function moveCards(direction, setCards, setIsMoving, transitionDuration) {
+  setIsMoving(true);
+  setCards((prevCards) => {
+    const newCards = [...prevCards];
+    if (direction > 0) {
+      const lastCard = newCards.pop();
+      newCards.unshift(lastCard);
+    } else {
+      const firstCard = newCards.shift();
+      newCards.push(firstCard);
+    }
+    return newCards;
+  });
+
+  return setTimeout(() => {
+    setIsMoving(false);
+  }, transitionDuration);
+}
+
+function flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration) {
+  const audioClone = flipAudioRef.current.cloneNode();
+  audioClone.play();
+
+  setCards((prevCards) =>
+    prevCards.map((card, index) =>
+      index === indexToFlip ? { ...card, isAnimating: true } : card
+    )
+  );
+
+  setTimeout(() => {
+    setCards((prevCards) =>
+      prevCards.map((card, index) =>
+        index === indexToFlip
+          ? { ...card, isAnimating: false, isFaceUp: !card.isFaceUp }
+          : card
+      )
+    );
+  }, transitionDuration);
+}
+
+function flipAllCards(setCards) {
+  setCards((prevCards) => {
+    const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
+    const newFaceUpState = !areAllFaceUp;
+
+    return prevCards.map((card) => ({
+      ...card,
+      isFaceUp: newFaceUpState,
+      isAnimating: card.isFaceUp !== newFaceUpState,
+    }));
+  });
+}
+
+function shuffleCards(shuffleAudioRef, setCards, transitionDuration) {
+  const audioClone = shuffleAudioRef.current.cloneNode();
+  audioClone.play();
+
+  setCards((prevCards) => {
+    const newCards = [...prevCards];
+
+    for (let i = newCards.length - 1; i > 0; i--) {
+      // Fisher-Yates shuffle algorithm.
+      const j = Math.floor(Math.random() * (i + 1));
+      [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
+    }
+
+    return newCards.map((card) => ({
+      ...card,
+      src: card.srcs[Math.floor(Math.random() * card.srcs.length)],
+      isFaceUp: false,
+      isAnimating: true,
+    }));
+  });
+
+  setTimeout(() => {
+    setCards((prevCards) =>
+      prevCards.map((card) => ({ ...card, isAnimating: false }))
+    );
+  }, transitionDuration);
 }
 
 export default App;
