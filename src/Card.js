@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from "react";
 
 function Card({
-  src,
+  front,
   position,
   cardName,
-  reverse,
+  back,
   isFaceUp,
   isAnimating,
   onClick,
@@ -43,7 +43,7 @@ function Card({
       }}
     >
       <img
-        src={isFaceUp ? src : reverse}
+        src={isFaceUp ? front : back}
         className={`image ${size}`}
         style={{
           border: isHovered ? "5px solid #f50334" : "",

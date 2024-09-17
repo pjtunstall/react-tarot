@@ -315,10 +315,10 @@ function App() {
           <div className={`carousel ${theme}`}>
             {cards.slice(0, 7).map((card, i) => (
               <Card
-                src={card.src}
+                front={card.src}
                 position={i}
                 cardName={card.name}
-                reverse={sigil.current}
+                back={sigil.current}
                 onClick={(event) => handleCardClick(event, i)}
                 isFaceUp={card.isFaceUp}
                 isAnimating={card.isAnimating}
@@ -403,7 +403,7 @@ function ThemeChangeButton({
 function LoadingScreen({ loadingProgress }) {
   return (
     <div className="loading-screen">
-      <h2>Loading the Cards</h2>
+      <h2>Loading the cards . . .</h2>
       <div className="progress-bar">
         <div
           className="progress-bar-fill"

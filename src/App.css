@@ -58,7 +58,7 @@
 }
 
 .flip {
-  animation: flip 0.15s ease-in-out;
+  animation: flip var(--transition-time) ease-in-out;
 }
 @keyframes flip {
   0% {
