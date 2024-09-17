@@ -57,12 +57,6 @@ function App() {
   const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
 
-  const handleCardClick = useCallback((event, indexToFlip) => {
-    event.preventDefault();
-    event.stopPropagation();
-    flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
-  }, []);
-
   const handleClickOrDoubleClick = useCallback(
     (event) => {
       event.preventDefault();
@@ -135,10 +129,10 @@ function App() {
         );
       } else if (event.code === "Space") {
         setIsSpacePressed(true);
-        handleCardClick(event, 3);
+        handleCardClick(event, 3, transitionDuration, setCards, flipAudioRef);
       }
     },
-    [isMoving, handleCardClick, isSpacePressed]
+    [isMoving, isSpacePressed]
   );
 
   const handleKeyUp = useCallback(
@@ -229,21 +223,15 @@ function App() {
       <audio ref={flipAudioRef} src={flipSound} />
       {areImagesLoaded ? (
         <>
-          <div className={`carousel ${theme}`}>
-            {cards.slice(0, 7).map((card, index) => (
-              <Card
-                front={card.src}
-                position={index}
-                cardName={card.name}
-                back={sigil.current}
-                onClick={(event) => handleCardClick(event, index)}
-                isFaceUp={card.isFaceUp}
-                isAnimating={card.isAnimating}
-                theme={theme}
-                key={card.name}
-              />
-            ))}
-          </div>
+          <Carousel
+            cards={cards}
+            handleCardClick={handleCardClick}
+            theme={theme}
+            transitionDuration={transitionDuration}
+            sigil={sigil}
+            setCards={setCards}
+            flipAudioRef={flipAudioRef}
+          />
 
           <Controls
             theme={theme}
@@ -262,6 +250,54 @@ function App() {
       ) : (
         <LoadingScreen loadingProgress={loadingProgress} />
       )}
+    </div>
+  );
+}
+
+function handleCardClick(
+  event,
+  indexToFlip,
+  transitionDuration,
+  setCards,
+  flipAudioRef
+) {
+  event.preventDefault();
+  event.stopPropagation();
+  flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
+}
+
+function Carousel({
+  cards,
+  handleCardClick,
+  theme,
+  transitionDuration,
+  sigil,
+  setCards,
+  flipAudioRef,
+}) {
+  return (
+    <div className={`carousel ${theme}`}>
+      {cards.slice(0, 7).map((card, index) => (
+        <Card
+          front={card.src}
+          position={index}
+          cardName={card.name}
+          back={sigil.current}
+          onClick={(event) =>
+            handleCardClick(
+              event,
+              index,
+              transitionDuration,
+              setCards,
+              flipAudioRef
+            )
+          }
+          isFaceUp={card.isFaceUp}
+          isAnimating={card.isAnimating}
+          theme={theme}
+          key={card.name}
+        />
+      ))}
     </div>
   );
 }
