@@ -1,7 +1,18 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
 import "./App.css";
-import Card from "./Card.js";
-import { cardImageFolders, sigils, sfx } from "./asset-imports.js";
+import { Carousel } from "./components/Carousel.js";
+import { Controls } from "./components/Controls.js";
+import { LoadingScreen } from "./components/LoadingScreen.js";
+import { cardImageFolders, sigils, sfx } from "./assets/assetImports.js";
+import { cardNames } from "./assets/cardNames.js";
+import { preloadImages } from "./preloadImages.js";
+import { handleKeyDown } from "./event-handlers/handleKeyDown.js";
+import { handleKeyUp } from "./event-handlers/handleKeyUp.js";
+import { handleClickOrDoubleClick } from "./event-handlers/handleClickOrDoubleClick.js";
+import { handleCardClick } from "./event-handlers/handleCardClick.js";
+import { moveCards } from "./card-actions/moveCards.js";
+import { shuffleCards } from "./card-actions/shuffleCards.js";
 
 function App() {
   const appRef = useRef(null);
@@ -11,31 +22,6 @@ function App() {
   const clickTimeoutRef = useRef(null);
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
-
-  const cardNames = [
-    "The Fool",
-    "The Magician",
-    "The High Priestess",
-    "The Empress",
-    "The Emperor",
-    "The Hierophant",
-    "The Lovers",
-    "The Chariot",
-    "Justice",
-    "The Hermit",
-    "The Wheel of Fortune",
-    "Strength",
-    "The Hanged One",
-    "Death",
-    "Temperance",
-    "The Devil",
-    "The Tower",
-    "The Star",
-    "The Moon",
-    "The Sun",
-    "Judgment",
-    "The World",
-  ];
 
   const initialCards = cardImageFolders.map((srcs, index) => ({
     srcs,
@@ -56,42 +42,6 @@ function App() {
   const flipAudioRef = useRef(new Audio(flipSound));
   const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
-
-  const handleKeyDown = useCallback(
-    (event) => {
-      event.preventDefault();
-      if (event.code === "Space" && isSpacePressed) return;
-      if (isMoving) return;
-      if (event.code === "ArrowLeft") {
-        timeoutRef.current = moveCards(
-          1,
-          setCards,
-          setIsMoving,
-          transitionDuration
-        );
-      } else if (event.code === "ArrowRight") {
-        timeoutRef.current = moveCards(
-          -1,
-          setCards,
-          setIsMoving,
-          transitionDuration
-        );
-      } else if (event.code === "Space") {
-        setIsSpacePressed(true);
-        handleCardClick(event, 3, transitionDuration, setCards, flipAudioRef);
-      }
-    },
-    [isMoving, isSpacePressed]
-  );
-
-  const handleKeyUp = useCallback(
-    (event) => {
-      if (event.code === "Space") {
-        setIsSpacePressed(false);
-      }
-    },
-    [setIsSpacePressed]
-  );
 
   // Swipe
   const startXRef = useRef();
@@ -155,7 +105,8 @@ function App() {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
-        handleCarouselCleanup(timeoutRef, clickTimeoutRef);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        clearTimeout(clickTimeoutRef.current); // Apparently ESLint is afraid that the value may have changed, but, of course, that's the whole point: we want to clear the latest timeout.
       }
     };
   }, [sigil_1, sigil_2]);
@@ -178,8 +129,22 @@ function App() {
         );
       }}
       tabIndex="0"
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
+      onKeyDown={(event) =>
+        handleKeyDown(
+          event,
+          isMoving,
+          setIsMoving,
+          isSpacePressed,
+          setIsSpacePressed,
+          setCards,
+          flipAudioRef,
+          transitionDuration,
+          timeoutRef
+        )
+      }
+      onKeyUp={(event) => {
+        handleKeyUp(event, setIsSpacePressed);
+      }}
     >
       <audio ref={flipAudioRef} src={flipSound} />
       {areImagesLoaded ? (
@@ -213,334 +178,6 @@ function App() {
       )}
     </div>
   );
-}
-
-function handleClickOrDoubleClick(
-  event,
-  isMoving,
-  clickCountRef,
-  clickTimeoutRef,
-  timeoutRef,
-  transitionDuration,
-  setCards,
-  setIsMoving,
-  flipAudioRef
-) {
-  event.preventDefault();
-  if (isMoving) return;
-
-  clickCountRef.current += 1;
-
-  if (clickCountRef.current === 1) {
-    clickTimeoutRef.current = setTimeout(() => {
-      if (clickCountRef.current === 1) {
-        // Single click action
-        if (event.clientX < window.innerWidth / 2) {
-          timeoutRef.current = moveCards(
-            1,
-            setCards,
-            setIsMoving,
-            transitionDuration
-          );
-        } else {
-          timeoutRef.current = moveCards(
-            -1,
-            setCards,
-            setIsMoving,
-            transitionDuration
-          );
-        }
-      }
-      clickCountRef.current = 0;
-    }, transitionDuration);
-  } else if (clickCountRef.current === 2) {
-    clearTimeout(clickTimeoutRef.current);
-    // Double click action
-    const audioClone = flipAudioRef.current.cloneNode();
-    audioClone.play();
-
-    setTimeout(() => {
-      flipAllCards(setCards);
-
-      setTimeout(() => {
-        setCards((prevCards) =>
-          prevCards.map((card) => ({ ...card, isAnimating: false }))
-        );
-      }, transitionDuration);
-    }, 20);
-
-    clickCountRef.current = 0;
-  }
-}
-
-function handleCardClick(
-  event,
-  indexToFlip,
-  transitionDuration,
-  setCards,
-  flipAudioRef
-) {
-  event.preventDefault();
-  event.stopPropagation();
-  flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
-}
-
-function Carousel({
-  cards,
-  handleCardClick,
-  theme,
-  transitionDuration,
-  sigil,
-  setCards,
-  flipAudioRef,
-}) {
-  return (
-    <div className={`carousel ${theme}`}>
-      {cards.slice(0, 7).map((card, index) => (
-        <Card
-          front={card.src}
-          position={index}
-          cardName={card.name}
-          back={sigil.current}
-          onClick={(event) =>
-            handleCardClick(
-              event,
-              index,
-              transitionDuration,
-              setCards,
-              flipAudioRef
-            )
-          }
-          isFaceUp={card.isFaceUp}
-          isAnimating={card.isAnimating}
-          theme={theme}
-          key={card.name}
-        />
-      ))}
-    </div>
-  );
-}
-
-function Controls({
-  theme,
-  setTheme,
-  sigil,
-  sigil_1,
-  sigil_2,
-  shuffleCards,
-  setCards,
-  shuffleAudioRef,
-  transitionDuration,
-  cockAudioRef,
-  owlAudioRef,
-}) {
-  return (
-    <div className="controls">
-      <button
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          shuffleCards(shuffleAudioRef, setCards, transitionDuration);
-        }}
-      >
-        🔀
-      </button>
-      <ThemeChangeButton
-        newTheme="light-theme"
-        newSigil={sigil_1}
-        theme={theme}
-        setTheme={setTheme}
-        icon="☀️"
-        sigil={sigil}
-        audioRef={cockAudioRef}
-      />
-      <ThemeChangeButton
-        newTheme="dark-theme"
-        newSigil={sigil_2}
-        theme={theme}
-        setTheme={setTheme}
-        icon="🌘"
-        sigil={sigil}
-        audioRef={owlAudioRef}
-      />
-    </div>
-  );
-}
-
-function handleCarouselCleanup(timeoutRef, clickTimeoutRef) {
-  if (timeoutRef.current) {
-    clearTimeout(timeoutRef.current);
-  }
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-}
-
-function ThemeChangeButton({
-  newTheme,
-  newSigil,
-  theme,
-  setTheme,
-  icon,
-  sigil,
-  audioRef,
-}) {
-  return (
-    <button
-      onClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (newTheme === theme) return;
-        const audioClone = audioRef.current.cloneNode();
-        audioClone.play();
-        setTheme(newTheme);
-        sigil.current = newSigil;
-      }}
-    >
-      {icon}
-    </button>
-  );
-}
-
-function LoadingScreen({ loadingProgress }) {
-  return (
-    <div className="loading-screen">
-      <h2>Loading the cards . . .</h2>
-      <div className="progress-bar">
-        <div
-          className="progress-bar-fill"
-          style={{ width: `${loadingProgress}%` }}
-        ></div>
-      </div>
-      <p>{loadingProgress}% loaded</p>
-    </div>
-  );
-}
-
-function preloadImages(
-  cardImageFolders,
-  sigil_1,
-  sigil_2,
-  setLoadingProgress,
-  setAreImagesLoaded
-) {
-  const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
-  const totalImages = imagesToLoad.length;
-
-  const loadImage = (src) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve({ status: "fulfilled", value: src });
-      img.onerror = () =>
-        resolve({ status: "rejected", reason: `Failed to load ${src}` });
-      img.src = src;
-    });
-  };
-
-  Promise.allSettled(imagesToLoad.map(loadImage))
-    .then((results) => {
-      const loadedCount = results.filter(
-        (result) => result.status === "fulfilled"
-      ).length;
-      setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
-
-      const failedImages = results.filter(
-        (result) => result.status === "rejected"
-      );
-      if (failedImages.length > 0) {
-        console.warn(
-          `Failed to load ${failedImages.length} images:`,
-          failedImages.map((result) => result.reason)
-        );
-      }
-
-      setAreImagesLoaded(true);
-    })
-    .catch((error) => {
-      console.error("Unexpected error during image loading:", error);
-      setAreImagesLoaded(true);
-    });
-}
-
-function moveCards(direction, setCards, setIsMoving, transitionDuration) {
-  setIsMoving(true);
-  setCards((prevCards) => {
-    const newCards = [...prevCards];
-    if (direction > 0) {
-      const lastCard = newCards.pop();
-      newCards.unshift(lastCard);
-    } else {
-      const firstCard = newCards.shift();
-      newCards.push(firstCard);
-    }
-    return newCards;
-  });
-
-  return setTimeout(() => {
-    setIsMoving(false);
-  }, transitionDuration);
-}
-
-function flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration) {
-  const audioClone = flipAudioRef.current.cloneNode();
-  audioClone.play();
-
-  setCards((prevCards) =>
-    prevCards.map((card, index) =>
-      index === indexToFlip ? { ...card, isAnimating: true } : card
-    )
-  );
-
-  setTimeout(() => {
-    setCards((prevCards) =>
-      prevCards.map((card, index) =>
-        index === indexToFlip
-          ? { ...card, isAnimating: false, isFaceUp: !card.isFaceUp }
-          : card
-      )
-    );
-  }, transitionDuration);
-}
-
-function flipAllCards(setCards) {
-  setCards((prevCards) => {
-    const areAllFaceUp = prevCards.every((card) => card.isFaceUp);
-    const newFaceUpState = !areAllFaceUp;
-
-    return prevCards.map((card) => ({
-      ...card,
-      isFaceUp: newFaceUpState,
-      isAnimating: card.isFaceUp !== newFaceUpState,
-    }));
-  });
-}
-
-function shuffleCards(shuffleAudioRef, setCards, transitionDuration) {
-  const audioClone = shuffleAudioRef.current.cloneNode();
-  audioClone.play();
-
-  setCards((prevCards) => {
-    const newCards = [...prevCards];
-
-    for (let i = newCards.length - 1; i > 0; i--) {
-      // Fisher-Yates shuffle algorithm.
-      const j = Math.floor(Math.random() * (i + 1));
-      [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
-    }
-
-    return newCards.map((card) => ({
-      ...card,
-      src: card.srcs[Math.floor(Math.random() * card.srcs.length)],
-      isFaceUp: false,
-      isAnimating: true,
-    }));
-  });
-
-  setTimeout(() => {
-    setCards((prevCards) =>
-      prevCards.map((card) => ({ ...card, isAnimating: false }))
-    );
-  }, transitionDuration);
 }
 
 export default App;
