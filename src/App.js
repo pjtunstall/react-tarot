@@ -82,7 +82,6 @@ function App() {
       })
       .catch((error) => {
         console.error("Failed to load some images:", error);
-        // Could set areImagesLoaded to true here, if partial failures are acceptable.
       });
   }, [sigil_1, sigil_2]);
 
@@ -322,7 +321,7 @@ function App() {
       <audio ref={flipAudioRef} src={flipSound} />
       {areImagesLoaded ? (
         <>
-          <header className={`App-header ${theme}`}>
+          <header className={`carousel ${theme}`}>
             {cards.slice(0, 7).map((card, i) => (
               <Card
                 src={card.src}
