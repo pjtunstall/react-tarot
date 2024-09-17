@@ -245,39 +245,69 @@ function App() {
             ))}
           </div>
 
-          <div className="controls">
-            <button
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                shuffleCards(shuffleAudioRef, setCards, transitionDuration);
-              }}
-            >
-              🔀
-            </button>
-            <ThemeChangeButton
-              newTheme="light-theme"
-              newSigil={sigil_1}
-              theme={theme}
-              setTheme={setTheme}
-              icon="☀️"
-              sigil={sigil}
-              audioRef={cockAudioRef}
-            />
-            <ThemeChangeButton
-              newTheme="dark-theme"
-              newSigil={sigil_2}
-              theme={theme}
-              setTheme={setTheme}
-              icon="🌘"
-              sigil={sigil}
-              audioRef={owlAudioRef}
-            />
-          </div>
+          <Controls
+            theme={theme}
+            setTheme={setTheme}
+            sigil={sigil}
+            sigil_1={sigil_1}
+            sigil_2={sigil_2}
+            shuffleCards={shuffleCards}
+            setCards={setCards}
+            shuffleAudioRef={shuffleAudioRef}
+            transitionDuration={transitionDuration}
+            cockAudioRef={cockAudioRef}
+            owlAudioRef={owlAudioRef}
+          ></Controls>
         </>
       ) : (
         <LoadingScreen loadingProgress={loadingProgress} />
       )}
+    </div>
+  );
+}
+
+function Controls({
+  theme,
+  setTheme,
+  sigil,
+  sigil_1,
+  sigil_2,
+  shuffleCards,
+  setCards,
+  shuffleAudioRef,
+  transitionDuration,
+  cockAudioRef,
+  owlAudioRef,
+}) {
+  return (
+    <div className="controls">
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          shuffleCards(shuffleAudioRef, setCards, transitionDuration);
+        }}
+      >
+        🔀
+      </button>
+      <ThemeChangeButton
+        newTheme="light-theme"
+        newSigil={sigil_1}
+        theme={theme}
+        setTheme={setTheme}
+        icon="☀️"
+        sigil={sigil}
+        audioRef={cockAudioRef}
+      />
+      <ThemeChangeButton
+        newTheme="dark-theme"
+        newSigil={sigil_2}
+        theme={theme}
+        setTheme={setTheme}
+        icon="🌘"
+        sigil={sigil}
+        audioRef={owlAudioRef}
+      />
     </div>
   );
 }
