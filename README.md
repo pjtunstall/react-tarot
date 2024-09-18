@@ -1,12 +1,35 @@
 # React Tarot
 
+## View online
+
 [React Tarot](https://react-tarot.netlify.app/)
 
-## Setup
+## Run locally
 
-To run locally on port 3000, install `Node,js`, `npm`, and the dependencies listed in `package.json`, then
+Alternatively, to run locally:
 
-`npm start`
+- Instal Node.js and npm:
+
+  - Visit the [Node.js](https://Nodeeijs.org/) website and download the installer for your operating system.
+  - Run the installer, which includes `npm` (Node Package Manager), followed by the installation prompts.
+
+- Open a terminal or command prompt:
+
+  - On Windows, you can search for "Command Prompt" or "Power Shell" and the Start Menu.
+  - On MacOS and Linux, open the "Terminal" application.
+
+- Clone the repo and navigate to the project directory:
+
+  - Use the `cd` command to navigate to the folder you want to download the project to.
+  - Clone the repo: `git clone https://github.com/pjtunstall/react-tarot`
+  - Navigate into the project: `cd react-tarot`
+
+- Install dependencies:
+
+  - `npm install`
+
+- Run on a local development server:
+  - `npm start`
 
 ## Usage
 
