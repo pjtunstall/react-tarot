@@ -1,20 +1,20 @@
 import { moveCards } from "../card-actions/moveCards";
-import { handleCardClick } from "./handleCardClick";
+import { flipCard } from "../card-actions/flipCard";
 
 export function handleKeyDown(
   event,
   isMoving,
   setIsMoving,
-  isSpacePressed,
-  setIsSpacePressed,
   setCards,
   flipAudioRef,
   transitionDuration,
-  timeoutRef
+  timeoutRef,
+  isSpacePressed,
+  setIsSpacePressed
 ) {
   event.preventDefault();
-  if (event.code === "Space" && isSpacePressed) return;
   if (isMoving) return;
+  if (isSpacePressed) return;
   if (event.code === "ArrowLeft") {
     timeoutRef.current = moveCards(
       1,
@@ -31,6 +31,6 @@ export function handleKeyDown(
     );
   } else if (event.code === "Space") {
     setIsSpacePressed(true);
-    handleCardClick(event, 3, transitionDuration, setCards, flipAudioRef);
+    flipCard(setCards, 3, flipAudioRef, transitionDuration);
   }
 }

@@ -13,6 +13,7 @@ import { handleClickOrDoubleClick } from "./event-handlers/handleClickOrDoubleCl
 import { handleCardClick } from "./event-handlers/handleCardClick.js";
 import { moveCards } from "./card-actions/moveCards.js";
 import { shuffleCards } from "./card-actions/shuffleCards.js";
+import { useSwipe } from "./hooks/useSwipe.js";
 
 function App() {
   const appRef = useRef(null);
@@ -22,7 +23,6 @@ function App() {
   const clickTimeoutRef = useRef(null);
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
-
   const initialCards = cardImageFolders.map((srcs, index) => ({
     srcs,
     src: srcs[0],
@@ -30,10 +30,9 @@ function App() {
     isFaceUp: false,
     isAnimating: false,
   }));
-
-  const [theme, setTheme] = useState("dark-theme");
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
+  const [theme, setTheme] = useState("dark-theme");
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [areImagesLoaded, setAreImagesLoaded] = useState(false);
@@ -43,53 +42,16 @@ function App() {
   const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
 
-  // Swipe
-  const startXRef = useRef();
-  useEffect(() => {
-    const handleTouchStart = (e) => {
-      const touch = e.touches[0];
-      startXRef.current = touch.clientX;
-    };
-
-    const handleTouchEnd = (e) => {
-      const touch = e.changedTouches[0];
-      const endX = touch.clientX;
-      if (startXRef.current) {
-        const deltaX = startXRef.current - endX;
-        if (Math.abs(deltaX) > 50) {
-          if (deltaX > 0) {
-            timeoutRef.current = moveCards(
-              -1,
-              setCards,
-              setIsMoving,
-              timeoutRef,
-              transitionDuration
-            ); // Swipe left
-          } else {
-            timeoutRef.current = moveCards(
-              1,
-              setCards,
-              setIsMoving,
-              transitionDuration
-            ); // Swipe right
-          }
-        }
-      }
-    };
-
-    const currentAppRef = appRef.current;
-    if (currentAppRef) {
-      currentAppRef.addEventListener("touchstart", handleTouchStart);
-      currentAppRef.addEventListener("touchend", handleTouchEnd);
-    }
-
-    return () => {
-      if (currentAppRef) {
-        currentAppRef.removeEventListener("touchstart", handleTouchStart);
-        currentAppRef.removeEventListener("touchend", handleTouchEnd);
-      }
-    };
-  });
+  useSwipe(
+    appRef,
+    moveCards,
+    isMoving,
+    setCards,
+    setIsMoving,
+    transitionDuration,
+    timeoutRef,
+    clickTimeoutRef
+  );
 
   useEffect(() => {
     shuffleCards(shuffleAudioRef, setCards, transitionDuration);
@@ -103,11 +65,11 @@ function App() {
     );
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        clearTimeout(clickTimeoutRef.current); // Apparently ESLint is afraid that the value may have changed, but, of course, that's the whole point: we want to clear the latest timeout.
-      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      clearTimeout(timeoutRef?.current);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      clearTimeout(clickTimeoutRef?.current);
+      // Apparently ESLint is afraid that the value may have changed, but, of course, that's the whole point: we want to clear the latest timeout.
     };
   }, [sigil_1, sigil_2]);
 
@@ -134,12 +96,12 @@ function App() {
           event,
           isMoving,
           setIsMoving,
-          isSpacePressed,
-          setIsSpacePressed,
           setCards,
           flipAudioRef,
           transitionDuration,
-          timeoutRef
+          timeoutRef,
+          isSpacePressed,
+          setIsSpacePressed
         )
       }
       onKeyUp={(event) => {
