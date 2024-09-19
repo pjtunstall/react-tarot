@@ -12,10 +12,10 @@ export function ModalContainer({ isModalOpen, setIsModalOpen, setIsBlurred }) {
           setIsBlurred(false);
         }}
       >
-        <p>
-          Click on cards to flip them. Click once elsewhere to rotate the
-          carousel, twice elsewhere to flip all. You can also rotate with arrow
-          keys and use space to flip the middle one.
+        <p style={{ textAlign: "left" }}>
+          Click on a card to flip it, or flip the middle card with space. Arrow
+          keys&mdash;or click once elsewhere&mdash;to turn the carousel. Click
+          twice elsewhere to flip all.
         </p>
       </Modal>
     </div>

@@ -5,7 +5,9 @@ export function Modal({ isOpen, onClose, children }) {
     <div className={`modal ${isOpen ? "open" : ""}`}>
       <div className="modal-content">
         {children}
-        <button onClick={onClose}>Close</button>
+        <button className="close-button" onClick={onClose}>
+          <span className="x-icon">&#x2715;</span>
+        </button>
       </div>
     </div>
   );
