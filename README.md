@@ -2,10 +2,10 @@
 
 "If a fool would persist in his foolishness, he would become wise." -- William Blake.
 
-[Intention](#intention)
-[View online](#view-online)
-[Run locally](#run-locally)
-[Usage](#usage)
+- [Intention](#intention)
+- [View online](#view-online)
+- [Run locally](#run-locally)
+- [Usage](#usage)
 
 ## Intention
 
