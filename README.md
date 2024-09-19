@@ -1,5 +1,16 @@
 # React Tarot
 
+"If a fool would persist in his foolishness, he would become wise." -- William Blake.
+
+[Intention](#intention)
+[View online](#view-online)
+[Run locally](#run-locally)
+[Usage](#usage)
+
+## Intention
+
+To learn some React.
+
 ## View online
 
 [React Tarot](https://react-tarot.netlify.app/)
@@ -33,4 +44,4 @@ Alternatively, to run locally:
 
 ## Usage
 
-"If a fool would persist in his foolishness, he would become wise." -- William Blake.
+Click on a card to flip it, or flip the middle card with space. Arrow keys&mdash;or click once elsewhere&mdash;to turn the carousel. Click twice elsewhere to flip all. Other controls buttons at the bottom-right corner of the screen.
