@@ -8,9 +8,10 @@ export function Carousel({
   sigil,
   setCards,
   flipAudioRef,
+  isBlurred,
 }) {
   return (
-    <div className={`carousel ${theme}`}>
+    <div className={`carousel ${theme} ${isBlurred ? "blurred" : ""}`}>
       {cards.slice(0, 7).map((card, index) => (
         <Card
           front={card.src}
@@ -23,7 +24,8 @@ export function Carousel({
               index,
               transitionDuration,
               setCards,
-              flipAudioRef
+              flipAudioRef,
+              isBlurred
             )
           }
           isFaceUp={card.isFaceUp}

@@ -5,9 +5,11 @@ export function handleCardClick(
   indexToFlip,
   transitionDuration,
   setCards,
-  flipAudioRef
+  flipAudioRef,
+  isBlurred
 ) {
   event.preventDefault();
   event.stopPropagation();
+  if (isBlurred) return;
   flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
 }

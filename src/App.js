@@ -4,6 +4,7 @@ import "./App.css";
 import { Carousel } from "./components/Carousel.js";
 import { Controls } from "./components/Controls.js";
 import { LoadingScreen } from "./components/LoadingScreen.js";
+import { ModalContainer } from "./components/ModalContainer.js";
 import { cardImageFolders, sigils, sfx } from "./assets/assetImports.js";
 import { cardNames } from "./assets/cardNames.js";
 import { preloadImages } from "./preloadImages.js";
@@ -41,6 +42,8 @@ function App() {
   const flipAudioRef = useRef(new Audio(flipSound));
   const owlAudioRef = useRef(new Audio(owlSound));
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
 
   useSwipe(
     appRef,
@@ -87,7 +90,8 @@ function App() {
           transitionDuration,
           setCards,
           setIsMoving,
-          flipAudioRef
+          flipAudioRef,
+          isBlurred
         );
       }}
       tabIndex="0"
@@ -101,7 +105,8 @@ function App() {
           transitionDuration,
           timeoutRef,
           isSpacePressed,
-          setIsSpacePressed
+          setIsSpacePressed,
+          isBlurred
         )
       }
       onKeyUp={(event) => {
@@ -119,8 +124,8 @@ function App() {
             sigil={sigil}
             setCards={setCards}
             flipAudioRef={flipAudioRef}
+            isBlurred={isBlurred}
           />
-
           <Controls
             theme={theme}
             setTheme={setTheme}
@@ -133,7 +138,17 @@ function App() {
             transitionDuration={transitionDuration}
             cockAudioRef={cockAudioRef}
             owlAudioRef={owlAudioRef}
+            setIsModalOpen={setIsModalOpen}
+            isBlurred={isBlurred}
+            setIsBlurred={setIsBlurred}
           ></Controls>
+          ({isModalOpen} &&{" "}
+          <ModalContainer
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            setIsBlurred={setIsBlurred}
+          />
+          )
         </>
       ) : (
         <LoadingScreen loadingProgress={loadingProgress} />

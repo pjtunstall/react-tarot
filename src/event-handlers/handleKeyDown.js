@@ -10,11 +10,12 @@ export function handleKeyDown(
   transitionDuration,
   timeoutRef,
   isSpacePressed,
-  setIsSpacePressed
+  setIsSpacePressed,
+  isBlurred
 ) {
   event.preventDefault();
-  if (isMoving) return;
-  if (isSpacePressed) return;
+  event.stopPropagation();
+  if (isBlurred || isMoving || isSpacePressed) return;
   if (event.code === "ArrowLeft") {
     timeoutRef.current = moveCards(
       1,

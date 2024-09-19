@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-.controls > button:hover {
+.controls:not(.blurred) > button:hover {
   background-color: #f50334;
   box-shadow: 0 0 10px 5px #5d0113;
 }
@@ -107,6 +107,10 @@
   transition: var(--transition-time) ease-in-out;
 }
 
+.blurred {
+  filter: blur(1px);
+}
+
 .dark-theme {
   background-color: rgb(16, 0, 0);
   color: white;
@@ -143,4 +147,28 @@
   height: 100%;
   background-color: #f50334;
   transition: width 0.5s ease-out;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.open {
+  display: block;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
 }

@@ -10,10 +10,12 @@ export function handleClickOrDoubleClick(
   transitionDuration,
   setCards,
   setIsMoving,
-  flipAudioRef
+  flipAudioRef,
+  isBlurred
 ) {
   event.preventDefault();
-  if (isMoving) return;
+  event.stopPropagation();
+  if (isMoving || isBlurred) return;
 
   clickCountRef.current += 1;
 
