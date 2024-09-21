@@ -12,9 +12,7 @@ import { handleKeyDown } from "./event-handlers/handleKeyDown.js";
 import { handleKeyUp } from "./event-handlers/handleKeyUp.js";
 import { handleClickOrDoubleClick } from "./event-handlers/handleClickOrDoubleClick.js";
 import { handleCardClick } from "./event-handlers/handleCardClick.js";
-import { moveCards } from "./card-actions/moveCards.js";
 import { shuffleCards } from "./card-actions/shuffleCards.js";
-import { useSwipe } from "./hooks/useSwipe.js";
 
 function App() {
   const appRef = useRef(null);
@@ -44,17 +42,6 @@ function App() {
   const shuffleAudioRef = useRef(new Audio(shuffleSound));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlurred, setIsBlurred] = useState(false);
-
-  useSwipe(
-    appRef,
-    moveCards,
-    isMoving,
-    setCards,
-    setIsMoving,
-    transitionDuration,
-    timeoutRef,
-    clickTimeoutRef
-  );
 
   useEffect(() => {
     shuffleCards(shuffleAudioRef, setCards, transitionDuration);
@@ -142,13 +129,11 @@ function App() {
             isBlurred={isBlurred}
             setIsBlurred={setIsBlurred}
           ></Controls>
-          ({isModalOpen} &&{" "}
           <ModalContainer
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
             setIsBlurred={setIsBlurred}
           />
-          )
         </>
       ) : (
         <LoadingScreen loadingProgress={loadingProgress} />

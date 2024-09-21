@@ -8,6 +8,7 @@ body {
   font-family: "Black Chancery";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(16, 0, 0);
 }
 
 code {

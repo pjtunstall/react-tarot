@@ -114,11 +114,11 @@
 
 .dark-theme {
   background-color: rgb(16, 0, 0);
-  color: rgb(240, 240, 240);
+  color: rgb(240, 255, 255);
 }
 
 .light-theme {
-  background-color: rgb(240, 240, 240);
+  background-color: rgb(240, 255, 255);
   color: rgb(16, 0, 0);
 }
 
