@@ -170,6 +170,11 @@
   transition: var(--transition-time) ease-in-out;
 }
 
+.close-button:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .modal-content {
   position: absolute;
   top: 50%;
