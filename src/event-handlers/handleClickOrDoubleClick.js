@@ -11,11 +11,18 @@ export function handleClickOrDoubleClick(
   setCards,
   setIsMoving,
   flipAudioRef,
-  isBlurred
+  isBlurred,
+  setIsBlurred,
+  setIsModalOpen
 ) {
   event.preventDefault();
   event.stopPropagation();
-  if (isMoving || isBlurred) return;
+  if (isMoving) return;
+  if (isBlurred) {
+    setIsModalOpen(false);
+    setIsBlurred(false);
+    return;
+  }
 
   clickCountRef.current += 1;
 

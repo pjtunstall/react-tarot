@@ -78,7 +78,9 @@ function App() {
           setCards,
           setIsMoving,
           flipAudioRef,
-          isBlurred
+          isBlurred,
+          setIsBlurred,
+          setIsModalOpen
         );
       }}
       tabIndex="0"
@@ -93,7 +95,9 @@ function App() {
           timeoutRef,
           isSpacePressed,
           setIsSpacePressed,
-          isBlurred
+          isBlurred,
+          setIsBlurred,
+          setIsModalOpen
         )
       }
       onKeyUp={(event) => {
