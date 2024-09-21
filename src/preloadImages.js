@@ -7,11 +7,16 @@ export function preloadImages(
 ) {
   const imagesToLoad = [...cardImageFolders.flat(), sigil_1, sigil_2];
   const totalImages = imagesToLoad.length;
+  let loadedCount = 0;
 
   const loadImage = (src) => {
     return new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => resolve({ status: "fulfilled", value: src });
+      img.onload = () => {
+        loadedCount++;
+        setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
+        resolve({ status: "fulfilled", value: src });
+      };
       img.onerror = () =>
         resolve({ status: "rejected", reason: `Failed to load ${src}` });
       img.src = src;
@@ -20,11 +25,6 @@ export function preloadImages(
 
   Promise.allSettled(imagesToLoad.map(loadImage))
     .then((results) => {
-      const loadedCount = results.filter(
-        (result) => result.status === "fulfilled"
-      ).length;
-      setLoadingProgress(Math.round((loadedCount / totalImages) * 100));
-
       const failedImages = results.filter(
         (result) => result.status === "rejected"
       );
@@ -38,7 +38,7 @@ export function preloadImages(
       setAreImagesLoaded(true);
     })
     .catch((error) => {
-      console.error("Unexpected error during image loading:", error);
+      console.error("Failed to load any images:", error);
       setAreImagesLoaded(true);
     });
 }
