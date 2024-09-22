@@ -17,7 +17,7 @@ export function ThemeChangeButton({
         if (newTheme === theme) return;
         const audioClone = audioRef.current.cloneNode();
         if (theme === "dark-theme") {
-          audioClone.volume = 0.2;
+          audioClone.volume = 0.16;
         }
         audioClone.play();
         setTheme(newTheme);

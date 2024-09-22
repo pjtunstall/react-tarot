@@ -1,5 +1,9 @@
 :root {
   --transition-time: 0.3s;
+  --primary-color: #5d0113;
+  --secondary-color: #f50334;
+  --dark-bg: rgb(16, 0, 0);
+  --light-bg: silver;
 }
 
 .App {
@@ -22,15 +26,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #5d0113;
+  background-color: var(--primary-color);
   transition: var(--transition-time) ease-in-out;
-  outline: none; /* Removes the default focus style. */
-  user-select: none; /* Prevents text selection. */
+  outline: none;
+  user-select: none;
 }
 
 .controls:not(.blurred) > button:hover {
-  background-color: #f50334;
-  box-shadow: 0 0 10px 5px #5d0113;
+  background-color: var(--secondary-color);
+  box-shadow: 0 0 10px 5px var(--primary-color);
 }
 
 .card {
@@ -39,7 +43,7 @@
 }
 
 .image {
-  border: 5px solid #5d0113;
+  border: 5px solid var(--primary-color);
   transition: var(--transition-time) ease-in-out;
   cursor: pointer;
 }
@@ -50,16 +54,17 @@
 }
 
 .title-dark-theme {
-  color: silver;
+  color: var(--light-bg);
 }
 
 .title-light-theme {
-  color: #5d0113;
+  color: var(--primary-color);
 }
 
 .flip {
   animation: flip var(--transition-time) ease-in-out;
 }
+
 @keyframes flip {
   0% {
     transform: rotateY(0deg);
@@ -112,13 +117,13 @@
 }
 
 .dark-theme {
-  background-color: rgb(16, 0, 0);
-  color: silver;
+  background-color: var(--dark-bg);
+  color: var(--light-bg);
 }
 
 .light-theme {
-  background-color: silver;
-  color: rgb(16, 0, 0);
+  background-color: var(--light-bg);
+  color: var(--dark-bg);
 }
 
 .loading-screen {
@@ -127,7 +132,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: rgb(16, 0, 0);
+  background-color: var(--dark-bg);
   color: white;
 }
 
@@ -141,7 +146,7 @@
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #f50334;
+  background-color: var(--secondary-color);
   transition: width 0.5s ease-out;
 }
 
@@ -184,5 +189,33 @@
   padding: 20px;
   border-radius: 5px;
   font-size: 1.3rem;
-  border: 5px solid #5d0113;
+  border: 5px solid var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .large-image {
+    width: 80vmin;
+    margin: 0 10px;
+  }
+
+  .small-image {
+    width: 30vmin;
+    margin: 0 5px;
+  }
+
+  .very-small-image {
+    width: 15vmin;
+    margin: 0 2.5px;
+  }
+
+  .very-very-small-image {
+    width: 3vmin;
+    margin: 0 1px;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 }
