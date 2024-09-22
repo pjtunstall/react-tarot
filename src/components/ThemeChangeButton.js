@@ -16,6 +16,9 @@ export function ThemeChangeButton({
         if (isBlurred) return;
         if (newTheme === theme) return;
         const audioClone = audioRef.current.cloneNode();
+        if (theme === "dark-theme") {
+          audioClone.volume = 0.2;
+        }
         audioClone.play();
         setTheme(newTheme);
         sigil.current = newSigil;
