@@ -1,13 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import "./App.css";
+
+// Components
 import { Carousel } from "./components/Carousel.js";
 import { Controls } from "./components/Controls.js";
 import { LoadingScreen } from "./components/LoadingScreen.js";
 import { ModalContainer } from "./components/ModalContainer.js";
+
+// Data
 import { cardImageFolders, sigils, sfx } from "./assets/assetImports.js";
 import { cardNames } from "./assets/cardNames.js";
 import { preloadImages } from "./preloadImages.js";
+
+// Event handlers
 import { handleKeyDown } from "./event-handlers/handleKeyDown.js";
 import { handleKeyUp } from "./event-handlers/handleKeyUp.js";
 import { handleClickOrDoubleClick } from "./event-handlers/handleClickOrDoubleClick.js";
@@ -54,12 +60,12 @@ function App() {
       setAreImagesLoaded
     );
 
+    // Apparently ESLint is afraid that the value of the timeout id may have changed--but, of course, that's the whole point: we want to clear the latest timeout, hence these pseudo-comments to disable the warning.
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       clearTimeout(timeoutRef?.current);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       clearTimeout(clickTimeoutRef?.current);
-      // Apparently ESLint is afraid that the value may have changed, but, of course, that's the whole point: we want to clear the latest timeout.
     };
   }, [sigil_1, sigil_2]);
 

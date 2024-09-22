@@ -1,13 +1,11 @@
-let lastInvocationTime = 0;
+let timeoutId = null;
 const throttleDelay = 333;
 
 export function handleKeyUp(event, setIsSpacePressed) {
-  const currentTime = Date.now();
-  if (
-    event.code === "Space" &&
-    currentTime - lastInvocationTime > throttleDelay
-  ) {
-    setIsSpacePressed(false);
-    lastInvocationTime = currentTime;
+  if (event.code === "Space") {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      setIsSpacePressed(false);
+    }, throttleDelay);
   }
 }

@@ -21,6 +21,7 @@ export function handleKeyDown(
   if (isBlurred) {
     setIsModalOpen(false);
     setIsBlurred(false);
+    console.log("Unblurring");
     return;
   }
   if (event.code === "ArrowLeft") {
