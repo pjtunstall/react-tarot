@@ -6,6 +6,7 @@
 - [View online](#view-online)
 - [Run locally](#run-locally)
 - [Usage](#usage)
+- [Credits](#credits)
 
 ## Intention
 
@@ -45,3 +46,7 @@ Alternatively, to run locally:
 ## Usage
 
 Click on a card to flip it, or flip the middle card with space. Arrow keys&mdash;or click once elsewhere&mdash;to turn the carousel. Click twice elsewhere to flip all. Other controls buttons at the bottom-right corner of the screen.
+
+## Credits
+
+Sound effects from [Pixabay](https://pixabay.com/). AI art by Dall-E.
