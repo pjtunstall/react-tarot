@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
+
+import { ThemeContext } from "./ThemeContext.js";
 
 function Card({
   front,
@@ -8,8 +10,9 @@ function Card({
   isFaceUp,
   isAnimating,
   onClick,
-  theme,
 }) {
+  const { theme } = useContext(ThemeContext);
+
   const [isHovered, setIsHovered] = useState(false);
   const size = getSizeClass(position);
 

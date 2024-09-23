@@ -1,13 +1,17 @@
+import { useContext } from "react";
+
+import { ThemeContext } from "./ThemeContext.js";
+
 export function ThemeChangeButton({
   newTheme,
   newSigil,
-  theme,
-  setTheme,
   icon,
   sigil,
   audioRef,
   isBlurred,
 }) {
+  const { theme, setTheme } = useContext(ThemeContext);
+
   return (
     <button
       onClick={(event) => {

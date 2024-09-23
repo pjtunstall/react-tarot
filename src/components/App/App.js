@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 
 import "./App.css";
+
+import { ThemeContext } from "../ThemeContext.js";
 
 // Components
 import { Carousel } from "../Carousel.js";
@@ -37,7 +39,7 @@ function App() {
   }));
   const [cards, setCards] = useState(initialCards);
   const [isMoving, setIsMoving] = useState(false);
-  const [theme, setTheme] = useState("dark-theme");
+  const { theme } = useContext(ThemeContext);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [areImagesLoaded, setAreImagesLoaded] = useState(false);
@@ -116,7 +118,6 @@ function App() {
           <Carousel
             cards={cards}
             handleCardClick={handleCardClick}
-            theme={theme}
             transitionDuration={transitionDuration}
             sigil={sigil}
             setCards={setCards}
@@ -124,8 +125,6 @@ function App() {
             isBlurred={isBlurred}
           />
           <Controls
-            theme={theme}
-            setTheme={setTheme}
             sigil={sigil}
             sigil_1={sigil_1}
             sigil_2={sigil_2}

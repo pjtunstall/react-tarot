@@ -1,8 +1,6 @@
 import { ThemeChangeButton } from "./ThemeChangeButton";
 
 export function Controls({
-  theme,
-  setTheme,
   sigil,
   sigil_1,
   sigil_2,
@@ -41,8 +39,6 @@ export function Controls({
       <ThemeChangeButton
         newTheme="light-theme"
         newSigil={sigil_1}
-        theme={theme}
-        setTheme={setTheme}
         icon="☀️"
         sigil={sigil}
         audioRef={cockAudioRef}
@@ -51,8 +47,6 @@ export function Controls({
       <ThemeChangeButton
         newTheme="dark-theme"
         newSigil={sigil_2}
-        theme={theme}
-        setTheme={setTheme}
         icon="🌘"
         sigil={sigil}
         audioRef={owlAudioRef}

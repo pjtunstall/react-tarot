@@ -1,15 +1,19 @@
+import { useContext } from "react";
+
 import Card from "./Card.js";
+import { ThemeContext } from "./ThemeContext.js";
 
 export function Carousel({
   cards,
   handleCardClick,
-  theme,
   transitionDuration,
   sigil,
   setCards,
   flipAudioRef,
   isBlurred,
 }) {
+  const { theme } = useContext(ThemeContext);
+
   return (
     <div className={`carousel ${theme} ${isBlurred ? "blurred" : ""}`}>
       {cards.slice(0, 7).map((card, index) => (
@@ -30,7 +34,6 @@ export function Carousel({
           }
           isFaceUp={card.isFaceUp}
           isAnimating={card.isAnimating}
-          theme={theme}
           key={card.name}
         />
       ))}
