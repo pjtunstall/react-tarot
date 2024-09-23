@@ -3,22 +3,22 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 // Components
-import { Carousel } from "./components/Carousel.js";
-import { Controls } from "./components/Controls.js";
-import { LoadingScreen } from "./components/LoadingScreen.js";
-import { ModalContainer } from "./components/ModalContainer.js";
+import { Carousel } from "../Carousel.js";
+import { Controls } from "../Controls.js";
+import { LoadingScreen } from "../LoadingScreen.js";
+import { ModalContainer } from "../ModalContainer.js";
 
 // Data
-import { cardImageFolders, sigils, sfx } from "./assets/assetImports.js";
-import { cardNames } from "./assets/cardNames.js";
-import { preloadImages } from "./preloadImages.js";
+import { cardImageFolders, sigils, sfx } from "../../assets/assetImports.js";
+import { cardNames } from "../../assets/cardNames.js";
+import { preloadImages } from "../../helpers/preloadImages.js";
 
 // Event handlers
-import { handleKeyDown } from "./event-handlers/handleKeyDown.js";
-import { handleKeyUp } from "./event-handlers/handleKeyUp.js";
-import { handleClickOrDoubleClick } from "./event-handlers/handleClickOrDoubleClick.js";
-import { handleCardClick } from "./event-handlers/handleCardClick.js";
-import { shuffleCards } from "./card-actions/shuffleCards.js";
+import { handleKeyDown } from "../../event-handlers/handleKeyDown.js";
+import { handleKeyUp } from "../../event-handlers/handleKeyUp.js";
+import { handleClickOrDoubleClick } from "../../event-handlers/handleClickOrDoubleClick.js";
+import { handleCardClick } from "../../event-handlers/handleCardClick.js";
+import { shuffleCards } from "../../card-actions/shuffleCards.js";
 
 function App() {
   const appRef = useRef(null);
