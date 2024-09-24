@@ -25,6 +25,9 @@ export function ThemeChangeButton({
         }
         audioClone.play();
         setTheme(newTheme);
+        const body = document.querySelector("body");
+        body.classList.remove(theme);
+        body.classList.add(newTheme);
         sigil.current = newSigil;
       }}
     >
