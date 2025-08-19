@@ -17,7 +17,7 @@ To learn some React.
 
 [React Tarot](https://react-tarot.netlify.app/)
 
-(Not mobile-frienly yet.)
+(Desktop only for now.)
 
 ## Run locally
 
