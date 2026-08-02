@@ -64,7 +64,6 @@ function Card({
           alt={cardName}
         />
       </div>
-      <div>{position === 3 && <p></p>}</div>
       <div
         className={`title title-${theme}`}
         style={{

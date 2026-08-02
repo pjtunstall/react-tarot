@@ -4,6 +4,13 @@
   --secondary-color: #f50334;
   --dark-bg: rgb(16, 0, 0);
   --light-bg: silver;
+  /* The center card's width (it's square, so this is its height too). Capped by:
+     - 60vmin: the original size, used whenever there's ample room in both dimensions.
+     - 55svh: leaves headroom below the card for its title, a small gap, and the
+       browser's own UI, so the tallest card always fits within the shortest the
+       viewport can be--critical in landscape, where height is scarce.
+     - 80vw: keeps the center card from ever being wider than the screen itself. */
+  --card-max-size: min(60vmin, 55svh, 80vw);
 }
 
 .App {
@@ -74,6 +81,7 @@
 }
 
 .image {
+  box-sizing: border-box; /* Keep the border inside the card-inner's own box instead of growing past it. */
   border: 5px solid var(--primary-color); /* Can't set it to 1vmin because that has the side effect of making other images move slightly when one hovers over an image, at least in Chrome with macOS Big Sur. */
   border-radius: 1vmin;
   transition: var(--transition-time) ease-in-out;
@@ -83,6 +91,7 @@
 .title {
   transition: var(--transition-time) ease-in-out;
   font-size: 5vmin;
+  margin-top: 1vmin;
 }
 
 .title-dark-theme {
@@ -107,23 +116,23 @@
 }
 
 .large-image {
-  width: 60vmin;
-  margin: 0 4vmin;
+  width: var(--card-max-size);
+  margin: 0 calc(var(--card-max-size) / 15);
 }
 
 .small-image {
-  width: 20vmin;
-  margin: 0 2vmin;
+  width: calc(var(--card-max-size) / 3);
+  margin: 0 calc(var(--card-max-size) / 30);
 }
 
 .very-small-image {
-  width: 10vmin;
-  margin: 0 1vmin;
+  width: calc(var(--card-max-size) / 6);
+  margin: 0 calc(var(--card-max-size) / 60);
 }
 
 .very-very-small-image {
-  width: 2vmin;
-  margin: 0 0.5vmin;
+  width: calc(var(--card-max-size) / 30);
+  margin: 0 calc(var(--card-max-size) / 120);
 }
 
 .hidden-image {
@@ -131,8 +140,8 @@
 }
 
 .carousel {
-  min-height: 100vh;
-  min-height: 100svh;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
   display: flex;
   align-items: center;
