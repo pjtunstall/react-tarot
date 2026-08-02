@@ -42,6 +42,7 @@
   transition: var(--transition-time) ease-in-out;
   user-select: none;
   perspective: 200vmin;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card-inner {

@@ -9,6 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: rgb(16, 0, 0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 code {
