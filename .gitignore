@@ -20,9 +20,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Temp
-blanktest.js
-measure.js
-mobile-screenshot.png
-touchtest.js

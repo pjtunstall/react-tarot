@@ -49,9 +49,3 @@ Click on a card to flip it, or flip the middle card with space. Arrow keys&mdash
 ## Credits
 
 Sound effects from [Pixabay](https://pixabay.com/). AI art by Dall-E.
-
-## Further
-
-### Responsivity
-
-As yet the CSS contains just a nod towards responsive design. This could be more systematic. The site could be tested on different browsers, screens, window sizes, and devices, in particular mobile devices. Swipe handling would need to be added to make the site accessible to touchscreen devices.

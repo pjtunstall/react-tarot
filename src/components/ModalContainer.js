@@ -13,8 +13,8 @@ export function ModalContainer({ isModalOpen, setIsModalOpen, setIsBlurred }) {
         }}
       >
         <p style={{ textAlign: "left" }}>
-          Click on a card to flip it, or flip the middle card with space. Arrow
-          keys&mdash;or click once elsewhere&mdash;to turn the carousel. Click
+          Click/tap a card to flip it, or flip the middle card with space. Arrow
+          keys, swipe, or click once elsewhere to turn the carousel. Click/tap
           twice elsewhere to flip all.
         </p>
       </Modal>

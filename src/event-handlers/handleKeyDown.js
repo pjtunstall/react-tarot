@@ -17,9 +17,9 @@ export function handleKeyDown(
   if (isBlurred) {
     return;
   }
-  event.preventDefault();
-  event.stopPropagation();
   if (event.code === "ArrowLeft") {
+    event.preventDefault();
+    event.stopPropagation();
     timeoutRef.current = moveCards(
       1,
       setCards,
@@ -27,6 +27,8 @@ export function handleKeyDown(
       transitionDuration
     );
   } else if (event.code === "ArrowRight") {
+    event.preventDefault();
+    event.stopPropagation();
     timeoutRef.current = moveCards(
       -1,
       setCards,
@@ -34,6 +36,8 @@ export function handleKeyDown(
       transitionDuration
     );
   } else if (event.code === "Space") {
+    event.preventDefault();
+    event.stopPropagation();
     setIsSpacePressed(true);
     flipCard(setCards, 3, flipAudioRef);
   }
