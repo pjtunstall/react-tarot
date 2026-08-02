@@ -20,6 +20,11 @@ import { handleKeyDown } from "../../event-handlers/handleKeyDown.js";
 import { handleKeyUp } from "../../event-handlers/handleKeyUp.js";
 import { handleClickOrDoubleClick } from "../../event-handlers/handleClickOrDoubleClick.js";
 import { handleCardClick } from "../../event-handlers/handleCardClick.js";
+import {
+  handleTouchStart,
+  handleTouchMove,
+  handleTouchEnd,
+} from "../../event-handlers/handleTouch.js";
 import { shuffleCards } from "../../card-actions/shuffleCards.js";
 
 function App() {
@@ -28,6 +33,9 @@ function App() {
   const transitionDuration = 300;
   const clickCountRef = useRef(0);
   const clickTimeoutRef = useRef(null);
+  const touchStartRef = useRef(null);
+  const isSwipeRef = useRef(false);
+  const isTouchTapRef = useRef(false);
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
   const initialCards = cardImageFolders.map((srcs, index) => ({
@@ -76,6 +84,8 @@ function App() {
       className="App"
       ref={appRef}
       onClick={(event) => {
+        const isTouchTap = isTouchTapRef.current;
+        isTouchTapRef.current = false;
         handleClickOrDoubleClick(
           event,
           isMoving,
@@ -88,9 +98,30 @@ function App() {
           flipAudioRef,
           isBlurred,
           setIsBlurred,
-          setIsModalOpen
+          setIsModalOpen,
+          isTouchTap
         );
       }}
+      onTouchStart={(event) =>
+        handleTouchStart(event, touchStartRef, isSwipeRef)
+      }
+      onTouchMove={(event) =>
+        handleTouchMove(event, touchStartRef, isSwipeRef)
+      }
+      onTouchEnd={(event) =>
+        handleTouchEnd(
+          event,
+          touchStartRef,
+          isSwipeRef,
+          isTouchTapRef,
+          isMoving,
+          isBlurred,
+          setCards,
+          setIsMoving,
+          transitionDuration,
+          timeoutRef
+        )
+      }
       tabIndex="0"
       onKeyDown={(event) =>
         handleKeyDown(
