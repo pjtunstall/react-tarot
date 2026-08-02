@@ -6,7 +6,6 @@ export function flipAllCards(setCards) {
     return prevCards.map((card) => ({
       ...card,
       isFaceUp: newFaceUpState,
-      isAnimating: card.isFaceUp !== newFaceUpState,
     }));
   });
 }

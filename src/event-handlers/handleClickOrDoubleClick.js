@@ -56,12 +56,6 @@ export function handleClickOrDoubleClick(
 
     setTimeout(() => {
       flipAllCards(setCards);
-
-      setTimeout(() => {
-        setCards((prevCards) =>
-          prevCards.map((card) => ({ ...card, isAnimating: false }))
-        );
-      }, transitionDuration);
     }, 20);
 
     clickCountRef.current = 0;

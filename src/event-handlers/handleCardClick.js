@@ -11,5 +11,5 @@ export function handleCardClick(
   event.preventDefault();
   event.stopPropagation();
   if (isBlurred) return;
-  flipCard(setCards, indexToFlip, flipAudioRef, transitionDuration);
+  flipCard(setCards, indexToFlip, flipAudioRef);
 }

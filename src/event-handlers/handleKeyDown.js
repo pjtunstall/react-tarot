@@ -35,6 +35,6 @@ export function handleKeyDown(
     );
   } else if (event.code === "Space") {
     setIsSpacePressed(true);
-    flipCard(setCards, 3, flipAudioRef, transitionDuration);
+    flipCard(setCards, 3, flipAudioRef);
   }
 }

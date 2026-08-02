@@ -33,6 +33,11 @@ function Card({
     }
   }
 
+  const hoverImageStyle = {
+    border: isHovered ? "5px solid #f50334" : "",
+    boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
+  };
+
   return (
     <div
       id={cardName}
@@ -45,15 +50,20 @@ function Card({
         transform: isHovered ? "scale(1.1)" : "",
       }}
     >
-      <img
-        src={isFaceUp ? front : back}
-        className={`image ${size}`}
-        style={{
-          border: isHovered ? "5px solid #f50334" : "",
-          boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
-        }}
-        alt={cardName}
-      />
+      <div className={`card-inner ${size} ${isFaceUp ? "face-up" : ""}`}>
+        <img
+          src={back}
+          className="card-face card-face-back image"
+          style={hoverImageStyle}
+          alt=""
+        />
+        <img
+          src={front}
+          className="card-face card-face-front image"
+          style={hoverImageStyle}
+          alt={cardName}
+        />
+      </div>
       <div>{position === 3 && <p></p>}</div>
       <div
         className={`title title-${theme}`}
