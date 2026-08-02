@@ -10,9 +10,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: rgb(16, 0, 0);
   -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
