@@ -24,7 +24,7 @@ To learn some React.
 Alternatively, to run locally:
 
 - Instal Node.js and npm:
-  - Visit the [Node.js](https://Nodeeijs.org/) website and download the installer for your operating system.
+  - Visit the [Node.js](https://Nodejs.org/) website and download the installer for your operating system.
   - Run the installer, which includes `npm` (Node Package Manager), followed by the installation prompts.
 
 - Open a terminal or command prompt:
@@ -44,7 +44,7 @@ Alternatively, to run locally:
 
 ## Usage
 
-Click on a card to flip it, or flip the middle card with space. Arrow keys&mdash;or click once elsewhere&mdash;to turn the carousel. Click twice elsewhere to flip all. Other controls buttons at the bottom-right corner of the screen.
+Click/tap a card to flip it, or flip the middle card with space. Arrow keys, swipe, or click once elsewhere to turn the carousel. Click twice elsewhere to flip all. Other controls buttons at the bottom-right corner of the screen.
 
 ## Credits
 
