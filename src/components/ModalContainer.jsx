@@ -1,4 +1,4 @@
-import { Modal } from "./Modal.js";
+import { Modal } from "./Modal.jsx";
 
 export function ModalContainer({ isModalOpen, setIsModalOpen, setIsBlurred }) {
   return (

@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 
 import "./App.css";
 
-import { ThemeContext } from "../ThemeContext.js";
+import { ThemeContext } from "../ThemeContext.jsx";
 
 // Components
-import { Carousel } from "../Carousel.js";
-import { Controls } from "../Controls.js";
-import { LoadingScreen } from "../LoadingScreen.js";
-import { ModalContainer } from "../ModalContainer.js";
+import { Carousel } from "../Carousel.jsx";
+import { Controls } from "../Controls.jsx";
+import { LoadingScreen } from "../LoadingScreen.jsx";
+import { ModalContainer } from "../ModalContainer.jsx";
 
 // Data
 import { cardImageFolders, sigils, sfx } from "../../assets/assetImports.js";

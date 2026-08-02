@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
-import Card from "./Card.js";
-import { ThemeContext } from "./ThemeContext.js";
+import Card from "./Card.jsx";
+import { ThemeContext } from "./ThemeContext.jsx";
 
 export function Carousel({
   cards,

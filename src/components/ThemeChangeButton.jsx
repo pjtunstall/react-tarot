@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { ThemeContext } from "./ThemeContext.js";
+import { ThemeContext } from "./ThemeContext.jsx";
 
 export function ThemeChangeButton({
   newTheme,

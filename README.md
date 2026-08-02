@@ -40,7 +40,7 @@ Alternatively, to run locally:
   - `npm install`
 
 - Run on a local development server:
-  - `npm start`
+  - `npm run dev`
 
 ## Usage
 
