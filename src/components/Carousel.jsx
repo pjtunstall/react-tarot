@@ -11,6 +11,10 @@ export function Carousel({
   setCards,
   flipAudioRef,
   isBlurred,
+  requestCardFlip,
+  isPendingFlip,
+  isFrontLoaded,
+  isFrontFailed,
 }) {
   const { theme } = useContext(ThemeContext);
 
@@ -29,11 +33,15 @@ export function Carousel({
               transitionDuration,
               setCards,
               flipAudioRef,
-              isBlurred
+              isBlurred,
+              requestCardFlip
             )
           }
           isFaceUp={card.isFaceUp}
           isAnimating={card.isAnimating}
+          isPendingFlip={isPendingFlip?.(card.name)}
+          isFrontLoaded={isFrontLoaded?.(card.src)}
+          isFrontFailed={isFrontFailed?.(card.src)}
           key={card.name}
         />
       ))}

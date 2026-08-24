@@ -7,7 +7,9 @@
 - [Run locally](#run-locally)
 - [Usage](#usage)
 - [Credits](#credits)
-- [Further](#further)
+- [Image loading](#image-loading)
+
+NOTE: This branch includes a system for async image loading. It was an experiment. I don't think I'll deploy it, though, as I don't really want users to be clicking on cards whose images are not ready. There's a pulse to acknowledge a click on a card, and it only turns when the image is ready, but that could still feel glitchy.
 
 ## Intention
 
@@ -47,3 +49,7 @@ Click/tap a card to flip it, or flip the middle card with space. Arrow keys, swi
 ## Credits
 
 Sound effects from [Pixabay](https://pixabay.com/). AI art by Dall-E.
+
+## Image loading
+
+Card images load asynchronously from the center of the carousel outward with the exception of a small first batch which are loaded up-front. See [docs/image-loading.md](docs/image-loading.md).

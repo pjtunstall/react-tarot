@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { ThemeContext } from "./ThemeContext.jsx";
+import { FAILED_FRONT_SRC } from "../helpers/useCardImagePreloader.js";
 
 function Card({
   front,
@@ -9,12 +10,30 @@ function Card({
   back,
   isFaceUp,
   isAnimating,
+  isPendingFlip,
+  isFrontLoaded,
+  isFrontFailed,
   onClick,
 }) {
   const { theme } = useContext(ThemeContext);
 
   const [isHovered, setIsHovered] = useState(false);
+  const [showAckFlare, setShowAckFlare] = useState(false);
   const size = getSizeClass(position);
+
+  useEffect(() => {
+    if (!isPendingFlip) {
+      setShowAckFlare(false);
+      return;
+    }
+
+    setShowAckFlare(true);
+    const timeoutId = setTimeout(() => {
+      setShowAckFlare(false);
+    }, 280);
+
+    return () => clearTimeout(timeoutId);
+  }, [isPendingFlip]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -33,15 +52,32 @@ function Card({
     }
   }
 
-  const hoverImageStyle = {
-    border: isHovered ? "5px solid #f50334" : "",
-    boxShadow: isHovered ? "0 0 10px 5px #5d0113" : "",
-  };
+  const hoverImageStyle = isHovered
+    ? {
+        border: "5px solid #f50334",
+        boxShadow: "0 0 10px 5px #5d0113",
+      }
+    : undefined;
+
+  const pendingClass = isPendingFlip
+    ? showAckFlare
+      ? "pending-flip pending-flip-ack"
+      : "pending-flip"
+    : "";
+
+  // Don't put the real URL on the <img> until the loader says it loaded;
+  // otherwise the browser would fetch independently of the preload queue.
+  let frontSrc;
+  if (isFrontFailed) {
+    frontSrc = FAILED_FRONT_SRC;
+  } else if (isFrontLoaded) {
+    frontSrc = front;
+  }
 
   return (
     <div
       id={cardName}
-      className={`card ${isAnimating ? "flip" : ""}`}
+      className={`card ${isAnimating ? "flip" : ""} ${pendingClass}`.trim()}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -58,7 +94,7 @@ function Card({
           alt=""
         />
         <img
-          src={front}
+          src={frontSrc}
           className="card-face card-face-front image"
           style={hoverImageStyle}
           alt={cardName}

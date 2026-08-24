@@ -11,7 +11,8 @@ export function handleKeyDown(
   timeoutRef,
   isSpacePressed,
   setIsSpacePressed,
-  isBlurred
+  isBlurred,
+  requestCardFlip
 ) {
   if (isMoving || isSpacePressed) return;
   if (isBlurred) {
@@ -39,6 +40,10 @@ export function handleKeyDown(
     event.preventDefault();
     event.stopPropagation();
     setIsSpacePressed(true);
-    flipCard(setCards, 3, flipAudioRef);
+    if (requestCardFlip) {
+      requestCardFlip(3);
+    } else {
+      flipCard(setCards, 3, flipAudioRef);
+    }
   }
 }

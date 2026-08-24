@@ -13,7 +13,7 @@ import { ModalContainer } from "../ModalContainer.jsx";
 // Data
 import { cardImageFolders, sigils, sfx } from "../../assets/assetImports.js";
 import { cardNames } from "../../assets/cardNames.js";
-import { preloadImages } from "../../helpers/preloadImages.js";
+import { useCardImagePreloader } from "../../helpers/useCardImagePreloader.js";
 
 // Event handlers
 import { handleKeyDown } from "../../event-handlers/handleKeyDown.js";
@@ -27,6 +27,26 @@ import {
 } from "../../event-handlers/handleTouch.js";
 import { shuffleCards } from "../../card-actions/shuffleCards.js";
 
+function createInitialCards() {
+  const cards = cardImageFolders.map((srcs, index) => ({
+    srcs,
+    src: srcs[0],
+    name: cardNames[index],
+    isFaceUp: false,
+    isAnimating: false,
+  }));
+
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  return cards.map((card) => ({
+    ...card,
+    src: card.srcs[Math.floor(Math.random() * card.srcs.length)],
+  }));
+}
+
 function App() {
   const appRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -38,19 +58,10 @@ function App() {
   const isTouchTapRef = useRef(false);
   const [sigil_1, sigil_2] = sigils;
   const [cockSound, flipSound, owlSound, shuffleSound] = sfx;
-  const initialCards = cardImageFolders.map((srcs, index) => ({
-    srcs,
-    src: srcs[0],
-    name: cardNames[index],
-    isFaceUp: false,
-    isAnimating: false,
-  }));
-  const [cards, setCards] = useState(initialCards);
+  const [cards, setCards] = useState(createInitialCards);
   const [isMoving, setIsMoving] = useState(false);
   const { theme } = useContext(ThemeContext);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [areImagesLoaded, setAreImagesLoaded] = useState(false);
   const sigil = useRef(theme === "light-theme" ? sigil_1 : sigil_2);
   const cockAudioRef = useRef(new Audio(cockSound));
   const flipAudioRef = useRef(new Audio(flipSound));
@@ -59,25 +70,31 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBlurred, setIsBlurred] = useState(false);
 
-  useEffect(() => {
-    shuffleCards(shuffleAudioRef, setCards, transitionDuration);
-    appRef.current.focus();
-    preloadImages(
-      cardImageFolders,
-      sigil_1,
-      sigil_2,
-      setLoadingProgress,
-      setAreImagesLoaded
-    );
+  const {
+    loadingProgress,
+    areImagesLoaded,
+    requestCardFlip,
+    isPendingFlip,
+    isFrontLoaded,
+    isFrontFailed,
+  } = useCardImagePreloader({
+    cards,
+    setCards,
+    sigil_1,
+    sigil_2,
+    flipAudioRef,
+  });
 
-    // Apparently ESLint is afraid that the value of the timeout id may have changed--but, of course, that's the whole point: we want to clear the latest timeout, hence these pseudo-comments to disable the warning.
+  useEffect(() => {
+    appRef.current?.focus();
+
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       clearTimeout(timeoutRef?.current);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       clearTimeout(clickTimeoutRef?.current);
     };
-  }, [sigil_1, sigil_2]);
+  }, []);
 
   return (
     <div
@@ -135,8 +152,7 @@ function App() {
           isSpacePressed,
           setIsSpacePressed,
           isBlurred,
-          setIsBlurred,
-          setIsModalOpen
+          requestCardFlip
         )
       }
       onKeyUp={(event) => {
@@ -154,6 +170,10 @@ function App() {
             setCards={setCards}
             flipAudioRef={flipAudioRef}
             isBlurred={isBlurred}
+            requestCardFlip={requestCardFlip}
+            isPendingFlip={isPendingFlip}
+            isFrontLoaded={isFrontLoaded}
+            isFrontFailed={isFrontFailed}
           />
           <Controls
             sigil={sigil}
